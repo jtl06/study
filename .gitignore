@@ -8,6 +8,8 @@ books/
 sources.local.json
 notebooks/local/
 notebooks/problem-statements.local.csv
+work/
+outputs/
 
 # Generated artifacts and editor noise.
 .DS_Store
