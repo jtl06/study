@@ -16,6 +16,7 @@ Study material for proving correctness of programs and reasoning about specifica
 - `notes/`: concept notes
 - `proofs/`: polished proof writeups
 - `exercises/`: original exercise attempts and corrections
+- `../../notebooks/generated/program-proofs/`: generated Jupyter workbooks
 
 ## Progress
 
@@ -27,4 +28,3 @@ Study material for proving correctness of programs and reasoning about specifica
 | Termination | Not started | |
 | Recursion and induction | Not started | |
 | Data abstraction | Not started | |
-

@@ -1,0 +1,4 @@
+subject_slug,subject_title,source,chapter,chapter_title,problem_id,problem_label,kind,difficulty,page_ref,status,tags
+operating-systems-principles-practice,Operating Systems: Principles and Practice,Operating Systems: Principles and Practice,01,Introduction and OS Structure,1.1,Add exercise title or short cue,exercise,,,"Not started","os"
+operating-systems-principles-practice,Operating Systems: Principles and Practice,Operating Systems: Principles and Practice,02,Processes and Threads,2.1,Add exercise title or short cue,exercise,,,"Not started","processes;threads"
+

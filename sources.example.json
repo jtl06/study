@@ -1,0 +1,15 @@
+{
+  "algorithm-design-manual": {
+    "title": "The Algorithm Design Manual",
+    "local_path": "/path/to/The Algorithm Design Manual - Steven S. Skiena.epub"
+  },
+  "operating-systems-principles-practice": {
+    "title": "Operating Systems: Principles and Practice",
+    "local_path": "/path/to/osppv4.pdf"
+  },
+  "program-proofs": {
+    "title": "Program Proofs",
+    "local_path": "/path/to/program-proofs.pdf"
+  }
+}
+

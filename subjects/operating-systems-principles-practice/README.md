@@ -15,6 +15,7 @@ Study material for operating systems concepts, design tradeoffs, and implementat
 - `notes/`: chapter and topic notes
 - `exercises/`: original exercise attempts and reflections
 - `projects/`: experiments, simulations, and implementation work
+- `../../notebooks/generated/operating-systems-principles-practice/`: generated Jupyter workbooks
 
 ## Progress
 
@@ -27,4 +28,3 @@ Study material for operating systems concepts, design tradeoffs, and implementat
 | Memory management | Not started | |
 | File systems | Not started | |
 | Security and distributed systems | Not started | |
-

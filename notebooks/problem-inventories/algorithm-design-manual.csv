@@ -1,0 +1,4 @@
+subject_slug,subject_title,source,chapter,chapter_title,problem_id,problem_label,kind,difficulty,page_ref,status,tags
+algorithm-design-manual,The Algorithm Design Manual,The Algorithm Design Manual,01,Introduction to Algorithm Design,1.1,Add exercise title or short cue,exercise,,,"Not started","algorithms"
+algorithm-design-manual,The Algorithm Design Manual,The Algorithm Design Manual,02,Algorithm Analysis,2.1,Add exercise title or short cue,exercise,,,"Not started","analysis"
+

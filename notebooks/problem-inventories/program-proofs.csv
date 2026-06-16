@@ -1,0 +1,4 @@
+subject_slug,subject_title,source,chapter,chapter_title,problem_id,problem_label,kind,difficulty,page_ref,status,tags
+program-proofs,Program Proofs,Program Proofs,01,Specifications,1.1,Add exercise title or short cue,proof,,,"Not started","specifications"
+program-proofs,Program Proofs,Program Proofs,02,Invariants,2.1,Add exercise title or short cue,proof,,,"Not started","invariants"
+

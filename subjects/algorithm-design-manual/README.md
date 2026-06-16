@@ -17,6 +17,7 @@ Study material for algorithmic problem solving, data structures, graph algorithm
 - `notes/`: chapter and topic notes
 - `exercises/`: original exercise attempts and postmortems
 - `implementations/`: code for algorithms and experiments
+- `../../notebooks/generated/algorithm-design-manual/`: generated Jupyter workbooks
 
 ## Progress
 
@@ -29,4 +30,3 @@ Study material for algorithmic problem solving, data structures, graph algorithm
 | Combinatorial search | Not started | |
 | Dynamic programming | Not started | |
 | Advanced topics | Not started | |
-

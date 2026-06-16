@@ -11,6 +11,9 @@ This repository is a home for structured self-study notes, exercises, and proof 
 ## Repository Layout
 
 ```text
+notebooks/
+  problem-inventories/
+  generated/
 subjects/
   operating-systems-principles-practice/
     notes/
@@ -31,6 +34,14 @@ templates/
   problem-log.md
 ```
 
+## Notebook Workflow
+
+Use [notebooks/](notebooks/) for Jupyter-style workbooks. The tracked inventories under `notebooks/problem-inventories/` define exercise references, and `scripts/generate_notebooks.py` turns them into `.ipynb` files with response and code cells.
+
+```sh
+python3 scripts/generate_notebooks.py
+```
+
 ## Ground Rules
 
 - Write original summaries and solutions in your own words.
@@ -45,4 +56,3 @@ templates/
 3. Write solutions from `templates/exercise-solution.md`.
 4. For formal reasoning, use `templates/proof-writeup.md`.
 5. Add implementation experiments when they clarify an algorithm, OS concept, or proof idea.
-

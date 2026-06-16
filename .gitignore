@@ -5,10 +5,12 @@ books/
 *.epub
 *.mobi
 *.djvu
+sources.local.json
 
 # Generated artifacts and editor noise.
 .DS_Store
 *.log
 .idea/
 .vscode/
-
+__pycache__/
+*.pyc
