@@ -6,6 +6,8 @@ books/
 *.mobi
 *.djvu
 sources.local.json
+AGENTS.md
+agents.md
 notebooks/local/
 notebooks/problem-statements.local.csv
 work/

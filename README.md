@@ -1,8 +1,8 @@
-# Self Study
+# Study
 
-This repository is a home for structured self-study notes, exercises, and proof writeups.
+This repository organizes long-form self-study across operating systems, algorithms, and program proof techniques. It is intended to hold durable notes, exercise inventories, solution drafts, code experiments, and generated notebooks without storing textbook source files or copied problem text.
 
-## Tracks
+## Study Areas
 
 - [Operating Systems: Principles and Practice](subjects/operating-systems-principles-practice/README.md)
 - [The Algorithm Design Manual](subjects/algorithm-design-manual/README.md)
@@ -36,23 +36,26 @@ templates/
 
 ## Notebook Workflow
 
-Use [notebooks/](notebooks/) for Jupyter-style workbooks. The tracked inventories under `notebooks/problem-inventories/` define exercise references, and `scripts/generate_notebooks.py` turns them into `.ipynb` files with response and code cells.
+[notebooks/](notebooks/) contains the Jupyter workflow. The tracked CSV inventories under `notebooks/problem-inventories/` define chapter, exercise, status, and short reference metadata. `scripts/generate_notebooks.py` turns those inventories into `.ipynb` files with note, response, code, verification, and reflection cells.
 
 ```sh
 python3 scripts/generate_notebooks.py
 ```
 
-## Ground Rules
+Generated notebooks under `notebooks/generated/` are commit-safe: they identify exercises by source and problem number but avoid copied problem statements.
 
-- Write original summaries and solutions in your own words.
-- Do not commit textbook PDFs, scans, answer keys, or copied problem statements.
-- Keep each note tied to a specific chapter, topic, or exercise source.
-- Prefer small, dated commits so progress is easy to review.
+For local study, copied statements can be kept outside git in `notebooks/problem-statements.local.csv` and rendered into ignored notebooks under `notebooks/local/`:
 
-## Suggested Workflow
+```sh
+python3 scripts/generate_notebooks.py --include-local-statements
+```
 
-1. Create a chapter note from `templates/chapter-notes.md`.
-2. Track exercises with `templates/problem-log.md`.
-3. Write solutions from `templates/exercise-solution.md`.
-4. For formal reasoning, use `templates/proof-writeup.md`.
-5. Add implementation experiments when they clarify an algorithm, OS concept, or proof idea.
+## Local Sources
+
+Textbook PDFs, EPUBs, extracted text, and local statement overlays are intentionally ignored. `sources.example.json` documents the expected shape for local source paths; copy it to `sources.local.json` for machine-specific paths.
+
+The repository should remain useful when cloned without access to those local files: tracked inventories and generated notebooks provide the stable structure, while local overlays add convenience for private study.
+
+## Working Model
+
+Notes and solutions can live directly in subject folders or in notebooks, depending on the format that best fits the material. Algorithm and systems exercises that benefit from experimentation should include code cells or small implementations; proof-heavy work should make assumptions, invariants, and termination arguments explicit.
