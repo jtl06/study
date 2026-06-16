@@ -6,6 +6,8 @@ books/
 *.mobi
 *.djvu
 sources.local.json
+notebooks/local/
+notebooks/problem-statements.local.csv
 
 # Generated artifacts and editor noise.
 .DS_Store

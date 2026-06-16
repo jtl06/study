@@ -18,7 +18,16 @@ python3 scripts/generate_notebooks.py
 
 By default, notebooks are written to `notebooks/generated/`.
 
+## Local Problem Statements
+
+The committed notebooks intentionally use placeholders instead of copied problem statements. If you want full statements on your own machine, copy `problem-statements.example.csv` to `problem-statements.local.csv`, paste statements there, and generate local notebooks:
+
+```sh
+python3 scripts/generate_notebooks.py --include-local-statements
+```
+
+That writes notebooks to `notebooks/local/`. Both `notebooks/local/` and `problem-statements.local.csv` are ignored by git, so other checkouts see only the placeholders.
+
 ## Local Text Sources
 
 If you want to keep local paths to books, copy `sources.example.json` to `sources.local.json` and edit the paths. `sources.local.json` is ignored by git.
-

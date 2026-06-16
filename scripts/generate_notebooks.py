@@ -15,6 +15,8 @@ from typing import Iterable
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INVENTORY_DIR = ROOT / "notebooks" / "problem-inventories"
 DEFAULT_OUTPUT_DIR = ROOT / "notebooks" / "generated"
+DEFAULT_LOCAL_OUTPUT_DIR = ROOT / "notebooks" / "local"
+DEFAULT_STATEMENTS_FILE = ROOT / "notebooks" / "problem-statements.local.csv"
 
 
 REQUIRED_COLUMNS = {
@@ -31,6 +33,9 @@ REQUIRED_COLUMNS = {
     "status",
     "tags",
 }
+
+
+STATEMENT_COLUMNS = {"subject_slug", "problem_id", "statement"}
 
 
 def slugify(value: str) -> str:
@@ -73,7 +78,43 @@ def load_rows(paths: Iterable[Path]) -> list[dict[str, str]]:
     return rows
 
 
-def notebook_for(group_rows: list[dict[str, str]]) -> dict:
+def load_statements(path: Path) -> dict[tuple[str, str], str]:
+    if not path.exists():
+        raise FileNotFoundError(f"Local statements file not found: {path}")
+
+    statements: dict[tuple[str, str], str] = {}
+    with path.open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        columns = set(reader.fieldnames or [])
+        missing = STATEMENT_COLUMNS - columns
+        if missing:
+            missing_list = ", ".join(sorted(missing))
+            raise ValueError(f"{path} is missing columns: {missing_list}")
+        for row in reader:
+            subject_slug = (row.get("subject_slug") or "").strip()
+            problem_id = (row.get("problem_id") or "").strip()
+            statement = (row.get("statement") or "").strip()
+            if subject_slug and problem_id and statement:
+                statements[(subject_slug, problem_id)] = statement
+    return statements
+
+
+def problem_reference(row: dict[str, str], statements: dict[tuple[str, str], str]) -> str:
+    statement = statements.get((row["subject_slug"], row["problem_id"]))
+    if statement:
+        return (
+            "### Local Problem Statement\n\n"
+            "This cell was generated from an ignored local file. Do not commit the local notebook output if it contains copied textbook text.\n\n"
+            f"{statement}\n"
+        )
+
+    return (
+        "### Problem Reference\n\n"
+        "Add a short reference or your own paraphrase. Do not paste copied problem text into committed notebooks.\n"
+    )
+
+
+def notebook_for(group_rows: list[dict[str, str]], statements: dict[tuple[str, str], str]) -> dict:
     first = group_rows[0]
     subject_title = first["subject_title"]
     chapter = first["chapter"]
@@ -119,8 +160,7 @@ def notebook_for(group_rows: list[dict[str, str]]) -> dict:
                     f"## {row['problem_id']}: {problem_label}\n\n"
                     + "\n".join(metadata)
                     + "\n\n"
-                    "### Problem Reference\n\n"
-                    "Add a short reference or your own paraphrase. Do not paste copied problem text into committed notebooks.\n"
+                    + problem_reference(row, statements)
                 ),
                 markdown_cell(
                     "### Response\n\n"
@@ -161,7 +201,11 @@ def notebook_for(group_rows: list[dict[str, str]]) -> dict:
     }
 
 
-def write_notebooks(rows: list[dict[str, str]], output_dir: Path) -> list[Path]:
+def write_notebooks(
+    rows: list[dict[str, str]],
+    output_dir: Path,
+    statements: dict[tuple[str, str], str],
+) -> list[Path]:
     grouped: dict[tuple[str, str, str], list[dict[str, str]]] = defaultdict(list)
     for row in rows:
         key = (row["subject_slug"], row["chapter"], row["chapter_title"])
@@ -173,7 +217,7 @@ def write_notebooks(rows: list[dict[str, str]], output_dir: Path) -> list[Path]:
         subject_dir.mkdir(parents=True, exist_ok=True)
         filename = f"ch{chapter}-{slugify(chapter_title)}.ipynb"
         path = subject_dir / filename
-        notebook = notebook_for(group_rows)
+        notebook = notebook_for(group_rows, statements)
         path.write_text(json.dumps(notebook, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         written.append(path)
     return written
@@ -190,8 +234,19 @@ def main() -> int:
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=DEFAULT_OUTPUT_DIR,
+        default=None,
         help="Directory where notebooks should be generated.",
+    )
+    parser.add_argument(
+        "--include-local-statements",
+        action="store_true",
+        help="Read copied problem statements from the ignored local statements CSV.",
+    )
+    parser.add_argument(
+        "--statements-file",
+        type=Path,
+        default=DEFAULT_STATEMENTS_FILE,
+        help="Ignored CSV file containing local problem statements.",
     )
     args = parser.parse_args()
 
@@ -200,7 +255,11 @@ def main() -> int:
         raise SystemExit(f"No CSV inventories found in {args.inventory_dir}")
 
     rows = load_rows(inventory_paths)
-    written = write_notebooks(rows, args.output_dir)
+    statements = load_statements(args.statements_file) if args.include_local_statements else {}
+    output_dir = args.output_dir
+    if output_dir is None:
+        output_dir = DEFAULT_LOCAL_OUTPUT_DIR if args.include_local_statements else DEFAULT_OUTPUT_DIR
+    written = write_notebooks(rows, output_dir, statements)
 
     for path in written:
         print(path.relative_to(ROOT))
@@ -209,4 +268,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
