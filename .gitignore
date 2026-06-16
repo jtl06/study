@@ -1,0 +1,14 @@
+# Local copies of copyrighted or licensed course material.
+texts/
+books/
+*.pdf
+*.epub
+*.mobi
+*.djvu
+
+# Generated artifacts and editor noise.
+.DS_Store
+*.log
+.idea/
+.vscode/
+
