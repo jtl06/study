@@ -28,6 +28,16 @@ python3 scripts/generate_notebooks.py --include-local-statements
 
 That writes notebooks to `notebooks/local/`. Both `notebooks/local/` and `problem-statements.local.csv` are ignored by git, so other checkouts see only the placeholders.
 
+## Local Question Images
+
+Tracked notebooks also reference ignored local SVG images for each problem. Render those images from your local statement CSV with:
+
+```sh
+python3 scripts/render_problem_images.py
+```
+
+Images are written to `notebooks/problem-images.local/`, which is ignored by git. When those files exist locally, the generated notebooks can display the question in the problem reference area without storing copied statement text in the repository.
+
 ## Local Text Sources
 
 If you want to keep local paths to books, copy `sources.example.json` to `sources.local.json` and edit the paths. `sources.local.json` is ignored by git.
