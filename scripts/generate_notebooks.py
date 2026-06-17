@@ -38,6 +38,7 @@ REQUIRED_COLUMNS = {
 
 
 STATEMENT_COLUMNS = {"subject_slug", "problem_id", "statement"}
+WORK_MODES = {"python", "cpp", "c++", "text", "mixed"}
 
 
 def slugify(value: str) -> str:
@@ -62,6 +63,13 @@ def code_cell(source: str = "") -> dict:
         "outputs": [],
         "source": source.splitlines(keepends=True),
     }
+
+
+def work_mode(row: dict[str, str]) -> str:
+    mode = (row.get("work_mode") or "mixed").strip().lower()
+    if mode not in WORK_MODES:
+        return "mixed"
+    return "cpp" if mode == "c++" else mode
 
 
 def load_rows(paths: Iterable[Path]) -> list[dict[str, str]]:
@@ -140,6 +148,66 @@ def problem_reference(
     )
 
 
+def text_response_cell() -> dict:
+    return markdown_cell(
+        "### Text Response\n\n"
+        "Write the main reasoning, proof, or solution attempt here.\n"
+    )
+
+
+def python_cell() -> dict:
+    return code_cell(
+        "# Python scratch / solution cell.\n"
+        "\n"
+        "def solve():\n"
+        "    pass\n"
+        "\n"
+        "\n"
+        "if __name__ == \"__main__\":\n"
+        "    solve()\n"
+    )
+
+
+def cpp_cell(row: dict[str, str]) -> dict:
+    subject_slug = slugify(row["subject_slug"])
+    problem_slug = slugify(row["problem_id"])
+    source_path = f"/tmp/{subject_slug}-{problem_slug}.cpp"
+    binary_path = f"/tmp/{subject_slug}-{problem_slug}"
+    return code_cell(
+        "%%bash\n"
+        f"cat > {source_path} <<'CPP'\n"
+        "#include <bits/stdc++.h>\n"
+        "using namespace std;\n"
+        "\n"
+        "int main() {\n"
+        "    ios::sync_with_stdio(false);\n"
+        "    cin.tie(nullptr);\n"
+        "\n"
+        "    return 0;\n"
+        "}\n"
+        "CPP\n"
+        f"g++ -std=c++20 -O2 -Wall -Wextra -pedantic {source_path} -o {binary_path}\n"
+        f"{binary_path}\n"
+    )
+
+
+def work_cells(row: dict[str, str]) -> list[dict]:
+    mode = work_mode(row)
+    if mode == "text":
+        return [text_response_cell()]
+    if mode == "python":
+        return [python_cell()]
+    if mode == "cpp":
+        return [cpp_cell(row)]
+    return [
+        text_response_cell(),
+        markdown_cell("### Python\n"),
+        python_cell(),
+        markdown_cell("### C++\n"),
+        cpp_cell(row),
+    ]
+
+
 def notebook_for(
     group_rows: list[dict[str, str]],
     statements: dict[tuple[str, str], str],
@@ -193,14 +261,7 @@ def notebook_for(
                     + "\n\n"
                     + problem_reference(row, statements, reference_local_images, image_dir)
                 ),
-                markdown_cell(
-                    "### Response\n\n"
-                    "Write the main reasoning, proof, or solution attempt here.\n"
-                ),
-                code_cell(
-                    "# Use this cell for experiments, checks, or implementations.\n"
-                    "# Add more code cells as needed.\n"
-                ),
+                *work_cells(row),
                 markdown_cell(
                     "### Verification and Reflection\n\n"
                     "- Checks performed:\n"

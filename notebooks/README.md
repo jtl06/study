@@ -18,6 +18,17 @@ python3 scripts/generate_notebooks.py
 
 By default, notebooks are written to `notebooks/generated/`.
 
+## Work Modes
+
+Inventory rows can include an optional `work_mode` column:
+
+- `mixed`: text response plus Python and C++ cells. This is the default.
+- `text`: text response only.
+- `python`: Python code cell only.
+- `cpp`: C++ compile-and-run cell using the Python notebook kernel's `%%bash` magic.
+
+If the column is omitted or blank, the generator uses `mixed`.
+
 ## Local Problem Statements
 
 The committed notebooks intentionally use placeholders instead of copied problem statements. If you want full statements on your own machine, copy `problem-statements.example.csv` to `problem-statements.local.csv`, paste statements there, and generate local notebooks:
