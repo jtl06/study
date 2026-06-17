@@ -22,12 +22,12 @@ By default, notebooks are written to `notebooks/generated/`.
 
 Inventory rows can include an optional `work_mode` column:
 
-- `mixed`: text response plus Python and C++ cells. This is the default.
-- `text`: text response only.
-- `python`: Python code cell only.
-- `cpp`: C++ compile-and-run cell using the Python notebook kernel's `%%bash` magic.
+- `mixed`: Markdown response plus Python and C++ cells. This is the default.
+- `text`: Markdown response only.
+- `python`: Markdown response plus a Python code cell.
+- `cpp`: Markdown response plus a C++ compile-and-run cell using the Python notebook kernel's `%%bash` magic.
 
-If the column is omitted or blank, the generator uses `mixed`.
+Every problem gets a Markdown response cell. If the column is omitted or blank, the generator uses `mixed`.
 
 ## Local Problem Statements
 
