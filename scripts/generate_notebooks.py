@@ -150,7 +150,6 @@ def problem_reference(
 
 def markdown_response_cell() -> dict:
     return markdown_cell(
-        "### Markdown Response\n\n"
         "Write the main reasoning, proof, notes, or solution attempt here.\n"
     )
 
@@ -197,19 +196,11 @@ def work_cells(row: dict[str, str]) -> list[dict]:
     if mode == "text":
         return cells
     if mode == "python":
-        return cells + [
-            markdown_cell("### Python\n"),
-            python_cell(),
-        ]
+        return cells + [python_cell()]
     if mode == "cpp":
-        return cells + [
-            markdown_cell("### C++\n"),
-            cpp_cell(row),
-        ]
+        return cells + [cpp_cell(row)]
     return cells + [
-        markdown_cell("### Python\n"),
         python_cell(),
-        markdown_cell("### C++\n"),
         cpp_cell(row),
     ]
 
