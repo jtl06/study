@@ -15,10 +15,7 @@ from typing import Iterable
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INVENTORY_DIR = ROOT / "notebooks" / "problem-inventories"
 DEFAULT_OUTPUT_DIR = ROOT / "notebooks" / "generated"
-DEFAULT_LOCAL_OUTPUT_DIR = ROOT / "notebooks" / "local"
-DEFAULT_STATEMENTS_FILE = ROOT / "notebooks" / "problem-statements.local.csv"
-LOCAL_IMAGE_DIR_NAME = "problem-images.local"
-DEFAULT_IMAGE_DIR = ROOT / "notebooks" / LOCAL_IMAGE_DIR_NAME
+DEFAULT_STATEMENTS_FILE = ROOT / "notebooks" / "problem-statements.csv"
 
 
 REQUIRED_COLUMNS = {
@@ -109,40 +106,20 @@ def load_statements(path: Path) -> dict[tuple[str, str], str]:
     return statements
 
 
-def local_image_path(row: dict[str, str], image_dir: Path) -> Path:
-    return image_dir / slugify(row["subject_slug"]) / f"{slugify(row['problem_id'])}.svg"
-
-
-def local_image_reference(row: dict[str, str]) -> str:
-    subject_slug = slugify(row["subject_slug"])
-    problem_slug = slugify(row["problem_id"])
-    image_path = f"../../{LOCAL_IMAGE_DIR_NAME}/{subject_slug}/{problem_slug}.svg"
-    return (
-        "### Problem Reference\n\n"
-        f"![Problem {row['problem_id']} statement]({image_path})\n"
-    )
-
-
 def problem_reference(
     row: dict[str, str],
     statements: dict[tuple[str, str], str],
-    reference_local_images: bool,
-    image_dir: Path,
 ) -> str:
     statement = statements.get((row["subject_slug"], row["problem_id"]))
     if statement:
         return (
-            "### Local Problem Statement\n\n"
-            "This cell was generated from an ignored local file. Do not commit the local notebook output if it contains copied textbook text.\n\n"
+            "### Problem Statement\n\n"
             f"{statement}\n"
         )
 
-    if reference_local_images and local_image_path(row, image_dir).exists():
-        return local_image_reference(row)
-
     return (
         "### Problem Reference\n\n"
-        "Add a short reference or your own paraphrase. Do not paste copied problem text into committed notebooks.\n"
+        "No exercise statement is available for this inventory row.\n"
     )
 
 
@@ -206,8 +183,6 @@ def work_cells(row: dict[str, str]) -> list[dict]:
 def notebook_for(
     group_rows: list[dict[str, str]],
     statements: dict[tuple[str, str], str],
-    reference_local_images: bool,
-    image_dir: Path,
 ) -> dict:
     first = group_rows[0]
     subject_title = first["subject_title"]
@@ -217,8 +192,7 @@ def notebook_for(
     cells = [
         markdown_cell(
             f"# {subject_title}: Chapter {chapter} - {chapter_title}\n\n"
-            "Use this notebook for original notes, solutions, code experiments, and proof attempts. "
-            "Keep copied textbook text out of committed cells.\n"
+            "Use this notebook for notes, solutions, code experiments, and proof attempts.\n"
         ),
         markdown_cell(
             "## Chapter Notes\n\n"
@@ -254,7 +228,7 @@ def notebook_for(
                     f"## {row['problem_id']}: {problem_label}\n\n"
                     + "\n".join(metadata)
                     + "\n\n"
-                    + problem_reference(row, statements, reference_local_images, image_dir)
+                    + problem_reference(row, statements)
                 ),
                 *work_cells(row),
                 markdown_cell(
@@ -292,8 +266,6 @@ def write_notebooks(
     rows: list[dict[str, str]],
     output_dir: Path,
     statements: dict[tuple[str, str], str],
-    reference_local_images: bool,
-    image_dir: Path,
 ) -> list[Path]:
     grouped: dict[tuple[str, str, str], list[dict[str, str]]] = defaultdict(list)
     for row in rows:
@@ -306,7 +278,7 @@ def write_notebooks(
         subject_dir.mkdir(parents=True, exist_ok=True)
         filename = f"ch{chapter}-{slugify(chapter_title)}.ipynb"
         path = subject_dir / filename
-        notebook = notebook_for(group_rows, statements, reference_local_images, image_dir)
+        notebook = notebook_for(group_rows, statements)
         path.write_text(json.dumps(notebook, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         written.append(path)
     return written
@@ -327,26 +299,10 @@ def main() -> int:
         help="Directory where notebooks should be generated.",
     )
     parser.add_argument(
-        "--include-local-statements",
-        action="store_true",
-        help="Read copied problem statements from the ignored local statements CSV.",
-    )
-    parser.add_argument(
         "--statements-file",
         type=Path,
         default=DEFAULT_STATEMENTS_FILE,
-        help="Ignored CSV file containing local problem statements.",
-    )
-    parser.add_argument(
-        "--image-dir",
-        type=Path,
-        default=DEFAULT_IMAGE_DIR,
-        help="Ignored directory containing local question images.",
-    )
-    parser.add_argument(
-        "--no-local-image-references",
-        action="store_true",
-        help="Do not add markdown image references to ignored local question images.",
+        help="Tracked CSV file containing exercise statements.",
     )
     args = parser.parse_args()
 
@@ -355,18 +311,12 @@ def main() -> int:
         raise SystemExit(f"No CSV inventories found in {args.inventory_dir}")
 
     rows = load_rows(inventory_paths)
-    statements = load_statements(args.statements_file) if args.include_local_statements else {}
+    statements = load_statements(args.statements_file)
     output_dir = args.output_dir
     if output_dir is None:
-        output_dir = DEFAULT_LOCAL_OUTPUT_DIR if args.include_local_statements else DEFAULT_OUTPUT_DIR
+        output_dir = DEFAULT_OUTPUT_DIR
     output_dir = output_dir.resolve()
-    written = write_notebooks(
-        rows,
-        output_dir,
-        statements,
-        reference_local_images=not args.no_local_image_references,
-        image_dir=args.image_dir,
-    )
+    written = write_notebooks(rows, output_dir, statements)
 
     for path in written:
         print(path.relative_to(ROOT))

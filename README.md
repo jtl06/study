@@ -1,6 +1,6 @@
 # Study
 
-This repository organizes long-form self-study across operating systems, algorithms, and program proof techniques. It is intended to hold durable notes, exercise inventories, solution drafts, code experiments, and generated notebooks without storing textbook source files or copied problem text.
+This private repository organizes long-form self-study across operating systems, algorithms, and program proof techniques. It holds exercise statements, durable notes, solution drafts, code experiments, and generated notebooks.
 
 ## Study Areas
 
@@ -42,19 +42,13 @@ templates/
 python3 scripts/generate_notebooks.py
 ```
 
-Generated notebooks under `notebooks/generated/` are commit-safe: they identify exercises by source and problem number but avoid copied problem statements.
-
-For local study, copied statements can be kept outside git in `notebooks/problem-statements.local.csv` and rendered into ignored notebooks under `notebooks/local/`:
-
-```sh
-python3 scripts/generate_notebooks.py --include-local-statements
-```
+Exercise text is stored in `notebooks/problem-statements.csv` and embedded directly in generated notebooks.
 
 ## Local Sources
 
-Textbook PDFs, EPUBs, extracted text, and local statement overlays are intentionally ignored. `sources.example.json` documents the expected shape for local source paths; copy it to `sources.local.json` for machine-specific paths.
+Textbook PDFs, EPUBs, and extracted chapter text are intentionally ignored. `sources.example.json` documents the expected shape for local source paths; copy it to `sources.local.json` for machine-specific paths.
 
-The repository should remain useful when cloned without access to those local files: tracked inventories and generated notebooks provide the stable structure, while local overlays add convenience for private study.
+The repository stores exercise statements only, not full textbook chapters or source books.
 
 ## Working Model
 
