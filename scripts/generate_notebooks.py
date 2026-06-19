@@ -359,6 +359,7 @@ def main() -> int:
     output_dir = args.output_dir
     if output_dir is None:
         output_dir = DEFAULT_LOCAL_OUTPUT_DIR if args.include_local_statements else DEFAULT_OUTPUT_DIR
+    output_dir = output_dir.resolve()
     written = write_notebooks(
         rows,
         output_dir,
