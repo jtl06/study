@@ -209,34 +209,13 @@ def notebook_for(
 
     for row in group_rows:
         problem_label = row["problem_label"] or "Add exercise title or short cue"
-        metadata = [
-            f"- Source: {row['source']}",
-            f"- Problem: {row['problem_id']}",
-            f"- Kind: {row['kind'] or 'exercise'}",
-            f"- Status: {row['status'] or 'Not started'}",
-        ]
-        if row["page_ref"]:
-            metadata.append(f"- Page/ref: {row['page_ref']}")
-        if row["difficulty"]:
-            metadata.append(f"- Difficulty: {row['difficulty']}")
-        if row["tags"]:
-            metadata.append(f"- Tags: {row['tags']}")
-
         cells.extend(
             [
                 markdown_cell(
                     f"## {row['problem_id']}: {problem_label}\n\n"
-                    + "\n".join(metadata)
-                    + "\n\n"
                     + problem_reference(row, statements)
                 ),
                 *work_cells(row),
-                markdown_cell(
-                    "### Verification and Reflection\n\n"
-                    "- Checks performed:\n"
-                    "- Mistakes or revisions:\n"
-                    "- Follow-up:\n"
-                ),
             ]
         )
 

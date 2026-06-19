@@ -36,7 +36,7 @@ templates/
 
 ## Notebook Workflow
 
-[notebooks/](notebooks/) contains the Jupyter workflow. The tracked CSV inventories under `notebooks/problem-inventories/` define chapter, exercise, status, and short reference metadata. `scripts/generate_notebooks.py` turns those inventories into `.ipynb` files with note, response, code, verification, and reflection cells.
+[notebooks/](notebooks/) contains the Jupyter workflow. The tracked CSV inventories under `notebooks/problem-inventories/` define chapter and exercise metadata. `scripts/generate_notebooks.py` turns those inventories into `.ipynb` files with problem statements, Markdown responses, and optional code cells.
 
 ```sh
 python3 scripts/generate_notebooks.py
