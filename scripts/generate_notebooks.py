@@ -119,9 +119,7 @@ def local_image_reference(row: dict[str, str]) -> str:
     image_path = f"../../{LOCAL_IMAGE_DIR_NAME}/{subject_slug}/{problem_slug}.svg"
     return (
         "### Problem Reference\n\n"
-        "Local question image, when available:\n\n"
-        f"![Problem {row['problem_id']} statement]({image_path})\n\n"
-        "If the image is missing, generate local question images from your ignored local statements file.\n"
+        f"![Problem {row['problem_id']} statement]({image_path})\n"
     )
 
 
