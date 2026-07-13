@@ -1,0 +1,1395 @@
+{
+  "problems": [
+    {
+      "key": "algorithm-design-manual:1-6",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "01",
+      "chapterTitle": "Introduction to Algorithm Design",
+      "problemId": "1-6",
+      "problemLabel": "Set cover greedy counterexample",
+      "kind": "exercise",
+      "difficulty": "5",
+      "pageRef": "Section 1.10",
+      "tags": [
+        "counterexample",
+        "set-cover",
+        "greedy"
+      ],
+      "statement": "The **set cover problem** is defined as follows. Given a collection $S = \\{S_1, \\ldots, S_m\\}$ of subsets of the universe $U = \\{1, \\ldots, n\\}$, find the smallest subcollection $T \\subseteq S$ such that\n\n$$\\bigcup_{S_i \\in T} S_i = U.$$\n\nFor example, let:\n\n- $S_1 = \\{1, 3, 5\\}$\n- $S_2 = \\{2, 4\\}$\n- $S_3 = \\{1, 4\\}$\n- $S_4 = \\{2, 5\\}$\n\nThen $\\{S_1, S_2\\}$ covers $U = \\{1, \\ldots, 5\\}$.\n\n**Find a counterexample for this greedy algorithm:**\n\n1. Select the largest remaining subset and add it to the cover.\n2. Remove its elements from the universe.\n3. Repeatedly add the subset containing the largest number of uncovered elements until every element is covered."
+    },
+    {
+      "key": "algorithm-design-manual:1-10",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "01",
+      "chapterTitle": "Introduction to Algorithm Design",
+      "problemId": "1-10",
+      "problemLabel": "Bubblesort correctness proof",
+      "kind": "proof",
+      "difficulty": "3",
+      "pageRef": "Section 1.10",
+      "tags": [
+        "correctness",
+        "sorting"
+      ],
+      "statement": "Prove the correctness of the following sorting algorithm.\n\n```text\nBUBBLESORT(A)\n    for i from n down to 1\n        for j from 1 to i - 1\n            if A[j] > A[j + 1]\n                swap A[j] and A[j + 1]\n```"
+    },
+    {
+      "key": "algorithm-design-manual:1-29",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "01",
+      "chapterTitle": "Introduction to Algorithm Design",
+      "problemId": "1-29",
+      "problemLabel": "Compare sorting runtime growth",
+      "kind": "exercise",
+      "difficulty": "4",
+      "pageRef": "Section 1.10",
+      "tags": [
+        "estimation",
+        "sorting",
+        "complexity"
+      ],
+      "statement": "A sorting algorithm takes **1 second** to sort **1,000 items** on your machine. How long will it take to sort **10,000 items** if its running time is proportional to:\n\n1. $2^n$\n2. $n \\log n$"
+    },
+    {
+      "key": "algorithm-design-manual:1-30",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "01",
+      "chapterTitle": "Introduction to Algorithm Design",
+      "problemId": "1-30",
+      "problemLabel": "Implement and compare TSP heuristics",
+      "kind": "project",
+      "difficulty": "5",
+      "pageRef": "Section 1.10",
+      "tags": [
+        "implementation",
+        "tsp",
+        "heuristics"
+      ],
+      "statement": "Implement the two traveling-salesperson (TSP) heuristics from Section 1.1 (page 5), then answer:\n\n1. Which heuristic gives better solutions in practice?\n2. Can you devise a heuristic that works better than both?"
+    },
+    {
+      "key": "algorithm-design-manual:1-32",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "01",
+      "chapterTitle": "Introduction to Algorithm Design",
+      "problemId": "1-32",
+      "problemLabel": "Integer division without division or multiplication",
+      "kind": "interview",
+      "difficulty": "5",
+      "pageRef": "Section 1.10",
+      "tags": [
+        "interview",
+        "arithmetic"
+      ],
+      "statement": "Write a function that performs integer division without using either the `/` or `*` operator.\n\nFind a fast way to do it."
+    },
+    {
+      "key": "algorithm-design-manual:2-5",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "02",
+      "chapterTitle": "Algorithm Analysis",
+      "problemId": "2-5",
+      "problemLabel": "Analyze a doubling-loop runtime",
+      "kind": "analysis",
+      "difficulty": "5",
+      "pageRef": "Section 2.11",
+      "tags": [
+        "complexity",
+        "summations"
+      ],
+      "statement": "Analyze a loop that starts x at each k from 1 through n and repeatedly doubles x while x < n. Derive tight asymptotic bounds for the total number of loop iterations."
+    },
+    {
+      "key": "algorithm-design-manual:2-7",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "02",
+      "chapterTitle": "Algorithm Analysis",
+      "problemId": "2-7",
+      "problemLabel": "Prove a linear maximum scan correct",
+      "kind": "proof",
+      "difficulty": "3",
+      "pageRef": "Section 2.11",
+      "tags": [
+        "correctness",
+        "arrays",
+        "invariant"
+      ],
+      "statement": "Prove that the standard linear scan for the maximum element of an array is correct. State a loop invariant, prove initialization and maintenance, and use it to justify the returned value."
+    },
+    {
+      "key": "algorithm-design-manual:2-23",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "02",
+      "chapterTitle": "Algorithm Analysis",
+      "problemId": "2-23",
+      "problemLabel": "Order common growth functions",
+      "kind": "analysis",
+      "difficulty": "5",
+      "pageRef": "Section 2.11",
+      "tags": [
+        "asymptotics",
+        "growth-rates"
+      ],
+      "statement": "Place the chapter's representative constant, logarithmic, polynomial, exponential, and factorial functions in increasing asymptotic order. Group functions that have the same growth rate and justify every comparison."
+    },
+    {
+      "key": "algorithm-design-manual:2-39",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "02",
+      "chapterTitle": "Algorithm Analysis",
+      "problemId": "2-39",
+      "problemLabel": "Find a missing integer in linear time",
+      "kind": "exercise",
+      "difficulty": "5",
+      "pageRef": "Section 2.11",
+      "tags": [
+        "arrays",
+        "analysis"
+      ],
+      "statement": "An unsorted array of length n contains distinct integers from 1 through n + 1 with exactly one value missing. Give an O(n)-time, O(1)-extra-space algorithm and prove its correctness."
+    },
+    {
+      "key": "algorithm-design-manual:2-48",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "02",
+      "chapterTitle": "Algorithm Analysis",
+      "problemId": "2-48",
+      "problemLabel": "Uniform reservoir sampling in one pass",
+      "kind": "design",
+      "difficulty": "5",
+      "pageRef": "Section 2.11",
+      "tags": [
+        "randomized",
+        "streaming",
+        "reservoir-sampling"
+      ],
+      "statement": "From a stream of n values, select exactly k values in one pass so every stream element has probability k/n of being selected. Handle the case where n is not known in advance and prove uniformity."
+    },
+    {
+      "key": "algorithm-design-manual:3-1",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "03",
+      "chapterTitle": "Data Structures",
+      "problemId": "3-1",
+      "problemLabel": "Validate balanced parentheses",
+      "kind": "implementation",
+      "difficulty": "3",
+      "pageRef": "Section 3.10",
+      "tags": [
+        "stack",
+        "strings"
+      ],
+      "statement": "Design an algorithm that determines whether parentheses in a string are balanced and properly nested. If they are not, report the first position that proves the string invalid. Analyze time and space usage."
+    },
+    {
+      "key": "algorithm-design-manual:3-3",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "03",
+      "chapterTitle": "Data Structures",
+      "problemId": "3-3",
+      "problemLabel": "Reverse a singly linked list",
+      "kind": "implementation",
+      "difficulty": "3",
+      "pageRef": "Section 3.10",
+      "tags": [
+        "linked-list",
+        "pointers"
+      ],
+      "statement": "Reverse a singly linked list in O(n) time and O(1) auxiliary space. Give pseudocode and identify the pointer invariant that prevents losing the unprocessed suffix."
+    },
+    {
+      "key": "algorithm-design-manual:3-4",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "03",
+      "chapterTitle": "Data Structures",
+      "problemId": "3-4",
+      "problemLabel": "Design a constant-time minimum stack",
+      "kind": "design",
+      "difficulty": "5",
+      "pageRef": "Section 3.10",
+      "tags": [
+        "stack",
+        "data-structures"
+      ],
+      "statement": "Design a stack supporting push, pop, and find-min in O(1) worst-case time per operation. State the representation and explain why duplicate minima are handled correctly."
+    },
+    {
+      "key": "algorithm-design-manual:3-17",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "03",
+      "chapterTitle": "Data Structures",
+      "problemId": "3-17",
+      "problemLabel": "Test whether a binary tree is height-balanced",
+      "kind": "implementation",
+      "difficulty": "5",
+      "pageRef": "Section 3.10",
+      "tags": [
+        "trees",
+        "recursion"
+      ],
+      "statement": "Determine whether an n-node binary tree is height-balanced in O(n) time. Return enough information from each recursive call to avoid recomputing subtree heights."
+    },
+    {
+      "key": "algorithm-design-manual:3-22",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "03",
+      "chapterTitle": "Data Structures",
+      "problemId": "3-22",
+      "problemLabel": "Maintain a streaming median",
+      "kind": "design",
+      "difficulty": "5",
+      "pageRef": "Section 3.10",
+      "tags": [
+        "heap",
+        "streaming"
+      ],
+      "statement": "Design a data structure for a stream of numbers supporting insert(x) and median() in O(log n) time. Explain its invariants and how it handles even-sized streams."
+    },
+    {
+      "key": "algorithm-design-manual:4-6",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "04",
+      "chapterTitle": "Sorting",
+      "problemId": "4-6",
+      "problemLabel": "Two-sum across two sets",
+      "kind": "exercise",
+      "difficulty": "3",
+      "pageRef": "Section 4.9",
+      "tags": [
+        "sorting",
+        "two-pointers"
+      ],
+      "statement": "Given two sets S1 and S2 of size n and a target x, determine in O(n log n) time whether some a in S1 and b in S2 satisfy a + b = x. Prove correctness and analyze the running time."
+    },
+    {
+      "key": "algorithm-design-manual:4-14",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "04",
+      "chapterTitle": "Sorting",
+      "problemId": "4-14",
+      "problemLabel": "Merge overlapping intervals",
+      "kind": "implementation",
+      "difficulty": "5",
+      "pageRef": "Section 4.9",
+      "tags": [
+        "sorting",
+        "intervals"
+      ],
+      "statement": "Given n closed intervals, merge all overlapping intervals and return the disjoint merged intervals in sorted order. Target O(n log n) time and prove why a single scan after sorting is sufficient."
+    },
+    {
+      "key": "algorithm-design-manual:4-18",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "04",
+      "chapterTitle": "Sorting",
+      "problemId": "4-18",
+      "problemLabel": "Merge k sorted lists with a heap",
+      "kind": "implementation",
+      "difficulty": "5",
+      "pageRef": "Section 4.9",
+      "tags": [
+        "sorting",
+        "heap"
+      ],
+      "statement": "Merge k sorted lists containing n total elements in O(n log k) time. Describe the heap contents, the update performed after each extraction, and the space complexity."
+    },
+    {
+      "key": "algorithm-design-manual:4-21",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "04",
+      "chapterTitle": "Sorting",
+      "problemId": "4-21",
+      "problemLabel": "Select the median with quickselect",
+      "kind": "design",
+      "difficulty": "3",
+      "pageRef": "Section 4.9",
+      "tags": [
+        "partition",
+        "selection",
+        "randomized"
+      ],
+      "statement": "Use quicksort-style partitioning to select the median of an unsorted array in expected O(n) time. Explain which partition can be discarded and derive the expected running time."
+    },
+    {
+      "key": "algorithm-design-manual:4-32",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "04",
+      "chapterTitle": "Sorting",
+      "problemId": "4-32",
+      "problemLabel": "Wiggle sort in linear time",
+      "kind": "implementation",
+      "difficulty": "5",
+      "pageRef": "Section 4.9",
+      "tags": [
+        "sorting",
+        "partition"
+      ],
+      "statement": "Reorder an unsorted array in place so A[0] < A[1] > A[2] < A[3] and so on. Target O(n) time and O(1) auxiliary space; explain how duplicates affect your design."
+    },
+    {
+      "key": "algorithm-design-manual:5-1",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "05",
+      "chapterTitle": "Divide and Conquer",
+      "problemId": "5-1",
+      "problemLabel": "Search a rotated sorted array",
+      "kind": "exercise",
+      "difficulty": "3",
+      "pageRef": "Section 5.10",
+      "tags": [
+        "binary-search",
+        "divide-and-conquer"
+      ],
+      "statement": "A sorted array has been rotated by an unknown offset. Give an O(log n) algorithm to locate its maximum element, and explain how the same reasoning supports searching for a target."
+    },
+    {
+      "key": "algorithm-design-manual:5-4",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "05",
+      "chapterTitle": "Divide and Conquer",
+      "problemId": "5-4",
+      "problemLabel": "Find a peak in a unimodal array",
+      "kind": "exercise",
+      "difficulty": "5",
+      "pageRef": "Section 5.10",
+      "tags": [
+        "binary-search",
+        "divide-and-conquer"
+      ],
+      "statement": "An array increases strictly to one maximum and then decreases strictly. Find the maximum in O(log n) time and prove that each comparison preserves the half containing the peak."
+    },
+    {
+      "key": "algorithm-design-manual:5-8",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "05",
+      "chapterTitle": "Divide and Conquer",
+      "problemId": "5-8",
+      "problemLabel": "Median of two sorted arrays",
+      "kind": "exercise",
+      "difficulty": "5",
+      "pageRef": "Section 5.10",
+      "tags": [
+        "binary-search",
+        "divide-and-conquer"
+      ],
+      "statement": "Given sorted arrays A and B with lengths n and m, find the median of their combined elements in O(log(n + m)) time without explicitly merging them. State the partition invariant."
+    },
+    {
+      "key": "algorithm-design-manual:5-9",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "05",
+      "chapterTitle": "Divide and Conquer",
+      "problemId": "5-9",
+      "problemLabel": "Maximum subarray in linear time",
+      "kind": "design",
+      "difficulty": "8",
+      "pageRef": "Section 5.10",
+      "tags": [
+        "divide-and-conquer",
+        "arrays"
+      ],
+      "statement": "Given an array of positive and negative numbers, find the contiguous subarray with maximum sum in O(n) time. Explain how the linear solution relates to the divide-and-conquer formulation."
+    },
+    {
+      "key": "algorithm-design-manual:5-14",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "05",
+      "chapterTitle": "Divide and Conquer",
+      "problemId": "5-14",
+      "problemLabel": "Solve divide-and-conquer recurrences",
+      "kind": "analysis",
+      "difficulty": "5",
+      "pageRef": "Section 5.10",
+      "tags": [
+        "recurrence",
+        "master-theorem"
+      ],
+      "statement": "Solve these recurrences with tight Theta bounds and justify each result: T(n)=2T(n/3)+1, T(n)=5T(n/4)+n, T(n)=7T(n/7)+n, and T(n)=9T(n/3)+n^2."
+    },
+    {
+      "key": "algorithm-design-manual:6-6",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "06",
+      "chapterTitle": "Hashing and Randomized Algorithms",
+      "problemId": "6-6",
+      "problemLabel": "Minimum covering window",
+      "kind": "implementation",
+      "difficulty": "5",
+      "pageRef": "Section 6.11",
+      "tags": [
+        "hashing",
+        "sliding-window"
+      ],
+      "statement": "Given strings S and T, find the shortest contiguous window of S containing every character of T with the required multiplicity. Target expected O(|S| + |T|) time using hashing."
+    },
+    {
+      "key": "algorithm-design-manual:6-7",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "06",
+      "chapterTitle": "Hashing and Randomized Algorithms",
+      "problemId": "6-7",
+      "problemLabel": "Design an LRU cache",
+      "kind": "design",
+      "difficulty": "8",
+      "pageRef": "Section 6.11",
+      "tags": [
+        "hashing",
+        "linked-list",
+        "cache"
+      ],
+      "statement": "Design an LRU cache supporting get(key) and put(key,value) in expected O(1) time. Explain the combined data structures, eviction rule, and updates for existing keys."
+    },
+    {
+      "key": "algorithm-design-manual:6-8",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "06",
+      "chapterTitle": "Hashing and Randomized Algorithms",
+      "problemId": "6-8",
+      "problemLabel": "Find rotationally equivalent word pairs",
+      "kind": "design",
+      "difficulty": "5",
+      "pageRef": "Section 6.11",
+      "tags": [
+        "hashing",
+        "strings",
+        "canonicalization"
+      ],
+      "statement": "Two equal-length words are rotationally equivalent if a circular shift turns one into the other. Find all such pairs among n words of length k, giving both worst-case and expected-time approaches."
+    },
+    {
+      "key": "algorithm-design-manual:6-9",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "06",
+      "chapterTitle": "Hashing and Randomized Algorithms",
+      "problemId": "6-9",
+      "problemLabel": "Weighted random index sampling",
+      "kind": "design",
+      "difficulty": "5",
+      "pageRef": "Section 6.11",
+      "tags": [
+        "randomized",
+        "prefix-sum",
+        "binary-search"
+      ],
+      "statement": "Given positive weights w[i], design an algorithm that returns index i with probability w[i] divided by the total weight. Support repeated samples efficiently and prove the distribution."
+    },
+    {
+      "key": "algorithm-design-manual:6-10",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "06",
+      "chapterTitle": "Hashing and Randomized Algorithms",
+      "problemId": "6-10",
+      "problemLabel": "Generate rand10 from rand7",
+      "kind": "analysis",
+      "difficulty": "5",
+      "pageRef": "Section 6.11",
+      "tags": [
+        "randomized",
+        "rejection-sampling"
+      ],
+      "statement": "Using only a uniform rand7() primitive, implement uniform rand10(). Prove that every result has equal probability and compute the expected number of rand7() calls."
+    },
+    {
+      "key": "algorithm-design-manual:7-6",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "07",
+      "chapterTitle": "Graph Traversal",
+      "problemId": "7-6",
+      "problemLabel": "Remove an edge while preserving connectivity",
+      "kind": "exercise",
+      "difficulty": "3",
+      "pageRef": "Section 7.11",
+      "tags": [
+        "graphs",
+        "dfs"
+      ],
+      "statement": "Given a connected undirected graph, find an edge whose removal leaves the graph connected, or report that none exists. Give an O(n + m) algorithm and prove the criterion you use."
+    },
+    {
+      "key": "algorithm-design-manual:7-15",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "07",
+      "chapterTitle": "Graph Traversal",
+      "problemId": "7-15",
+      "problemLabel": "Seat incompatible guests at two tables",
+      "kind": "design",
+      "difficulty": "5",
+      "pageRef": "Section 7.11",
+      "tags": [
+        "graphs",
+        "bipartite",
+        "bfs"
+      ],
+      "statement": "Guests connected by an incompatibility edge cannot sit at the same one of two tables. Determine whether a valid seating exists and construct one in O(n + m) time."
+    },
+    {
+      "key": "algorithm-design-manual:7-23",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "07",
+      "chapterTitle": "Graph Traversal",
+      "problemId": "7-23",
+      "problemLabel": "Compute the diameter of a tree",
+      "kind": "implementation",
+      "difficulty": "5",
+      "pageRef": "Section 7.11",
+      "tags": [
+        "trees",
+        "bfs",
+        "dfs"
+      ],
+      "statement": "The diameter of a tree is the maximum distance between two vertices. Give a linear-time algorithm to compute it and prove why two graph traversals are sufficient."
+    },
+    {
+      "key": "algorithm-design-manual:7-25",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "07",
+      "chapterTitle": "Graph Traversal",
+      "problemId": "7-25",
+      "problemLabel": "Count shortest paths in an unweighted graph",
+      "kind": "design",
+      "difficulty": "6",
+      "pageRef": "Section 7.11",
+      "tags": [
+        "graphs",
+        "bfs",
+        "shortest-path"
+      ],
+      "statement": "For vertices v and w in an unweighted directed graph, count the number of distinct shortest paths from v to w in linear time. Extend BFS with the required distance and count invariants."
+    },
+    {
+      "key": "algorithm-design-manual:7-31",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "07",
+      "chapterTitle": "Graph Traversal",
+      "problemId": "7-31",
+      "problemLabel": "Recover an unknown alphabet order",
+      "kind": "design",
+      "difficulty": "5",
+      "pageRef": "Section 7.11",
+      "tags": [
+        "graphs",
+        "topological-sort"
+      ],
+      "statement": "You are given words sorted according to an unknown alphabet. Recover a valid character order, or report that the input is inconsistent. Model the constraints as a graph and analyze the algorithm."
+    },
+    {
+      "key": "algorithm-design-manual:8-7",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "08",
+      "chapterTitle": "Weighted Graph Algorithms",
+      "problemId": "8-7",
+      "problemLabel": "Update an MST after adding an edge",
+      "kind": "design",
+      "difficulty": "5",
+      "pageRef": "Section 8.8",
+      "tags": [
+        "graphs",
+        "mst"
+      ],
+      "statement": "Given an MST T of graph G and a new weighted edge (u,v), update the MST of G plus that edge in O(n) time. Prove when the new edge should replace an edge of T."
+    },
+    {
+      "key": "algorithm-design-manual:8-12",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "08",
+      "chapterTitle": "Weighted Graph Algorithms",
+      "problemId": "8-12",
+      "problemLabel": "Find a minimum feedback-edge set",
+      "kind": "design",
+      "difficulty": "4",
+      "pageRef": "Section 8.8",
+      "tags": [
+        "graphs",
+        "mst",
+        "cycles"
+      ],
+      "statement": "A feedback-edge set intersects every cycle of an undirected graph. Find a minimum-cardinality set in an unweighted graph and a minimum-weight set when all edge weights are positive. Relate both solutions to spanning forests."
+    },
+    {
+      "key": "algorithm-design-manual:8-19",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "08",
+      "chapterTitle": "Weighted Graph Algorithms",
+      "problemId": "8-19",
+      "problemLabel": "Shortest path through a required vertex",
+      "kind": "exercise",
+      "difficulty": "3",
+      "pageRef": "Section 8.8",
+      "tags": [
+        "graphs",
+        "shortest-path"
+      ],
+      "statement": "Find a shortest path from x to y in a positively weighted undirected graph subject to the path passing through a required vertex z. Give the algorithm and its complexity."
+    },
+    {
+      "key": "algorithm-design-manual:8-25",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "08",
+      "chapterTitle": "Weighted Graph Algorithms",
+      "problemId": "8-25",
+      "problemLabel": "Shortest paths in a weighted DAG",
+      "kind": "implementation",
+      "difficulty": "5",
+      "pageRef": "Section 8.8",
+      "tags": [
+        "graphs",
+        "dag",
+        "shortest-path"
+      ],
+      "statement": "Give a linear-time single-source shortest-path algorithm for a weighted DAG, allowing negative edge weights. Explain the role of topological order and prove correctness."
+    },
+    {
+      "key": "algorithm-design-manual:8-27",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "08",
+      "chapterTitle": "Weighted Graph Algorithms",
+      "problemId": "8-27",
+      "problemLabel": "Detect currency arbitrage",
+      "kind": "design",
+      "difficulty": "5",
+      "pageRef": "Section 8.8",
+      "tags": [
+        "graphs",
+        "shortest-path",
+        "negative-cycle"
+      ],
+      "statement": "Given directed currency exchange rates, determine whether a sequence of trades can produce a guaranteed profit. Transform rates so the problem becomes negative-cycle detection and justify the transformation."
+    },
+    {
+      "key": "algorithm-design-manual:9-5",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "09",
+      "chapterTitle": "Combinatorial Search",
+      "problemId": "9-5",
+      "problemLabel": "Return the kth lexicographic permutation",
+      "kind": "design",
+      "difficulty": "5",
+      "pageRef": "Section 9.8",
+      "tags": [
+        "combinatorics",
+        "permutations"
+      ],
+      "statement": "Return the kth permutation of 1 through n in lexicographic order without constructing the first k - 1 permutations. Use factorial block sizes and analyze the running time."
+    },
+    {
+      "key": "algorithm-design-manual:9-7",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "09",
+      "chapterTitle": "Combinatorial Search",
+      "problemId": "9-7",
+      "problemLabel": "Generate valid parentheses",
+      "kind": "implementation",
+      "difficulty": "5",
+      "pageRef": "Section 9.8",
+      "tags": [
+        "backtracking",
+        "strings"
+      ],
+      "statement": "Generate every valid sequence containing n pairs of parentheses without generating invalid prefixes. Describe the pruning invariant and analyze output-sensitive complexity."
+    },
+    {
+      "key": "algorithm-design-manual:9-9",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "09",
+      "chapterTitle": "Combinatorial Search",
+      "problemId": "9-9",
+      "problemLabel": "Enumerate unique target-sum subsets",
+      "kind": "implementation",
+      "difficulty": "5",
+      "pageRef": "Section 9.8",
+      "tags": [
+        "backtracking",
+        "subsets"
+      ],
+      "statement": "Given a multiset of integers and target t, enumerate every distinct subset whose sum is t. Each value may be used no more often than it appears. Avoid duplicate solutions and explain your pruning."
+    },
+    {
+      "key": "algorithm-design-manual:9-13",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "09",
+      "chapterTitle": "Combinatorial Search",
+      "problemId": "9-13",
+      "problemLabel": "Partition a multiset into k equal-sum groups",
+      "kind": "implementation",
+      "difficulty": "5",
+      "pageRef": "Section 9.8",
+      "tags": [
+        "backtracking",
+        "partition"
+      ],
+      "statement": "Partition a multiset of positive integers into k disjoint groups with equal sums, or report impossibility. Design a backtracking algorithm with strong pruning and symmetry breaking."
+    },
+    {
+      "key": "algorithm-design-manual:9-18",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "09",
+      "chapterTitle": "Combinatorial Search",
+      "problemId": "9-18",
+      "problemLabel": "Find dictionary words on a Boggle board",
+      "kind": "implementation",
+      "difficulty": "5",
+      "pageRef": "Section 9.8",
+      "tags": [
+        "backtracking",
+        "trie"
+      ],
+      "statement": "Given a character grid and dictionary, enumerate all dictionary words formed by adjacent cells without reusing a cell in one word. Design an effective backtracking and prefix-pruning strategy."
+    },
+    {
+      "key": "algorithm-design-manual:10-5",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "10",
+      "chapterTitle": "Dynamic Programming",
+      "problemId": "10-5",
+      "problemLabel": "Minimum-cost grid path",
+      "kind": "implementation",
+      "difficulty": "5",
+      "pageRef": "Section 10.11",
+      "tags": [
+        "dynamic-programming",
+        "grid"
+      ],
+      "statement": "Find a minimum-sum path from the upper-left to lower-right of a nonnegative grid when moves may go only right or down. Give both a dynamic-programming recurrence and a space optimization."
+    },
+    {
+      "key": "algorithm-design-manual:10-6",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "10",
+      "chapterTitle": "Dynamic Programming",
+      "problemId": "10-6",
+      "problemLabel": "Edit distance with adjacent swaps",
+      "kind": "design",
+      "difficulty": "3",
+      "pageRef": "Section 10.11",
+      "tags": [
+        "dynamic-programming",
+        "strings",
+        "edit-distance"
+      ],
+      "statement": "Extend edit distance with an operation that swaps adjacent characters at cost one. Define the additional recurrence case, base conditions, and the time and space complexity."
+    },
+    {
+      "key": "algorithm-design-manual:10-12",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "10",
+      "chapterTitle": "Dynamic Programming",
+      "problemId": "10-12",
+      "problemLabel": "Coin change with arbitrary denominations",
+      "kind": "design",
+      "difficulty": "5",
+      "pageRef": "Section 10.11",
+      "tags": [
+        "dynamic-programming",
+        "coin-change"
+      ],
+      "statement": "For arbitrary positive coin denominations and target n, find the minimum number of coins needed or report impossibility. Show why greedy can fail, then give and analyze a dynamic-programming solution."
+    },
+    {
+      "key": "algorithm-design-manual:10-18",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "10",
+      "chapterTitle": "Dynamic Programming",
+      "problemId": "10-18",
+      "problemLabel": "Maximum contiguous subarray sum",
+      "kind": "implementation",
+      "difficulty": "5",
+      "pageRef": "Section 10.11",
+      "tags": [
+        "dynamic-programming",
+        "arrays"
+      ],
+      "statement": "Find the maximum sum of a contiguous subarray in O(n) time. State the recurrence or invariant, return the endpoint indices, and explain behavior when every number is negative."
+    },
+    {
+      "key": "algorithm-design-manual:10-20",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "10",
+      "chapterTitle": "Dynamic Programming",
+      "problemId": "10-20",
+      "problemLabel": "Subset sum in pseudo-polynomial time",
+      "kind": "design",
+      "difficulty": "6",
+      "pageRef": "Section 10.11",
+      "tags": [
+        "dynamic-programming",
+        "subset-sum",
+        "knapsack"
+      ],
+      "statement": "Given positive integers S and target T, determine whether a subset sums exactly to T in O(nT) time. Define the dynamic-programming state, recurrence, initialization, and reconstruction procedure."
+    },
+    {
+      "key": "algorithm-design-manual:11-3",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "11",
+      "chapterTitle": "NP-Completeness",
+      "problemId": "11-3",
+      "problemLabel": "Prove 4-SAT is NP-hard",
+      "kind": "proof",
+      "difficulty": "3",
+      "pageRef": "Section 11.10",
+      "tags": [
+        "np-completeness",
+        "reduction",
+        "sat"
+      ],
+      "statement": "Prove that 4-SAT is NP-hard. Give a polynomial reduction from 3-SAT or SAT, prove satisfiability is preserved in both directions, and bound the construction size."
+    },
+    {
+      "key": "algorithm-design-manual:11-6",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "11",
+      "chapterTitle": "NP-Completeness",
+      "problemId": "11-6",
+      "problemLabel": "Recover a TSP tour from a decision oracle",
+      "kind": "design",
+      "difficulty": "4",
+      "pageRef": "Section 11.10",
+      "tags": [
+        "np-completeness",
+        "reduction"
+      ],
+      "statement": "Assume a fast oracle answers whether a weighted graph has a TSP tour of cost at most B. Show how to recover an actual optimal tour using only polynomially many oracle calls."
+    },
+    {
+      "key": "algorithm-design-manual:11-10",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "11",
+      "chapterTitle": "NP-Completeness",
+      "problemId": "11-10",
+      "problemLabel": "Reduce vertex cover to set cover",
+      "kind": "proof",
+      "difficulty": "4",
+      "pageRef": "Section 11.10",
+      "tags": [
+        "np-completeness",
+        "reduction",
+        "set-cover"
+      ],
+      "statement": "Prove set cover is NP-hard by reducing vertex cover to it. Define the universe and subsets, prove both directions, and show that the construction is polynomial in size."
+    },
+    {
+      "key": "algorithm-design-manual:11-33",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "11",
+      "chapterTitle": "NP-Completeness",
+      "problemId": "11-33",
+      "problemLabel": "Solve 2-SAT in polynomial time",
+      "kind": "design",
+      "difficulty": "8",
+      "pageRef": "Section 11.10",
+      "tags": [
+        "graphs",
+        "sat",
+        "strongly-connected-components"
+      ],
+      "statement": "Design a polynomial-time algorithm for 2-SAT. Build the implication graph, characterize satisfiability using strongly connected components, and explain how to recover an assignment."
+    },
+    {
+      "key": "algorithm-design-manual:11-34",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "11",
+      "chapterTitle": "NP-Completeness",
+      "problemId": "11-34",
+      "problemLabel": "Show certificate problems belong to NP",
+      "kind": "proof",
+      "difficulty": "4",
+      "pageRef": "Section 11.10",
+      "tags": [
+        "np-completeness",
+        "certificates",
+        "verification"
+      ],
+      "statement": "Show that each problem belongs to NP by describing a polynomial-size certificate and verifier: a simple path of length k, compositeness of an integer, and a vertex cover of size k."
+    },
+    {
+      "key": "algorithm-design-manual:12-4",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "12",
+      "chapterTitle": "Dealing with Hard Problems",
+      "problemId": "12-4",
+      "problemLabel": "Half-approximation for maximum SAT",
+      "kind": "proof",
+      "difficulty": "4",
+      "pageRef": "Section 12.11",
+      "tags": [
+        "approximation",
+        "sat"
+      ],
+      "statement": "For maximum satisfiability, give a polynomial-time heuristic or randomized algorithm whose expected number of satisfied clauses is at least half of optimal. Prove the guarantee."
+    },
+    {
+      "key": "algorithm-design-manual:12-5",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "12",
+      "chapterTitle": "Dealing with Hard Problems",
+      "problemId": "12-5",
+      "problemLabel": "Two-approximation for vertex cover",
+      "kind": "proof",
+      "difficulty": "5",
+      "pageRef": "Section 12.11",
+      "tags": [
+        "approximation",
+        "graphs"
+      ],
+      "statement": "A heuristic forms a DFS tree and removes all leaves, returning the remaining vertices as a vertex cover. Prove the cover is valid and no more than twice the size of an optimal cover."
+    },
+    {
+      "key": "algorithm-design-manual:12-6",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "12",
+      "chapterTitle": "Dealing with Hard Problems",
+      "problemId": "12-6",
+      "problemLabel": "Half-approximation for maximum cut",
+      "kind": "proof",
+      "difficulty": "5",
+      "pageRef": "Section 12.11",
+      "tags": [
+        "approximation",
+        "graphs",
+        "max-cut"
+      ],
+      "statement": "For maximum cut, analyze the greedy rule that assigns each new vertex to the side adding more crossing edges. Prove the resulting cut has at least half as many edges as an optimal cut."
+    },
+    {
+      "key": "algorithm-design-manual:12-7",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "12",
+      "chapterTitle": "Dealing with Hard Problems",
+      "problemId": "12-7",
+      "problemLabel": "Analyze first-fit bin packing",
+      "kind": "analysis",
+      "difficulty": "5",
+      "pageRef": "Section 12.11",
+      "tags": [
+        "approximation",
+        "greedy",
+        "bin-packing"
+      ],
+      "statement": "Analyze first-fit bin packing for item weights in (0,1]. Prove a constant-factor guarantee and construct an input demonstrating that the heuristic can use substantially more bins than optimal."
+    },
+    {
+      "key": "algorithm-design-manual:12-10",
+      "subjectSlug": "algorithm-design-manual",
+      "subjectTitle": "The Algorithm Design Manual",
+      "source": "The Algorithm Design Manual",
+      "chapter": "12",
+      "chapterTitle": "Dealing with Hard Problems",
+      "problemId": "12-10",
+      "problemLabel": "Color a graph with at most delta plus one colors",
+      "kind": "design",
+      "difficulty": "5",
+      "pageRef": "Section 12.11",
+      "tags": [
+        "heuristics",
+        "graph-coloring"
+      ],
+      "statement": "Give a polynomial-time algorithm that colors any graph using at most Delta + 1 colors, where Delta is maximum degree. Prove the bound and analyze the implementation."
+    },
+    {
+      "key": "operating-systems-principles-practice:1",
+      "subjectSlug": "operating-systems-principles-practice",
+      "subjectTitle": "Operating Systems: Principles and Practice",
+      "source": "Operating Systems: Principles and Practice v1 PDF",
+      "chapter": "01",
+      "chapterTitle": "Introduction",
+      "problemId": "1",
+      "problemLabel": "OS roles as referee illusionist and glue",
+      "kind": "discussion",
+      "difficulty": "",
+      "pageRef": "Chapter 1 Exercises",
+      "tags": [
+        "os",
+        "concepts"
+      ],
+      "statement": "What is an example of an operating system as: a. Referee? b. Illusionist? c. Glue?"
+    },
+    {
+      "key": "operating-systems-principles-practice:2",
+      "subjectSlug": "operating-systems-principles-practice",
+      "subjectTitle": "Operating Systems: Principles and Practice",
+      "source": "Operating Systems: Principles and Practice v1 PDF",
+      "chapter": "01",
+      "chapterTitle": "Introduction",
+      "problemId": "2",
+      "problemLabel": "Compare core operating-systems terms",
+      "kind": "discussion",
+      "difficulty": "",
+      "pageRef": "Chapter 1 Exercises",
+      "tags": [
+        "os",
+        "concepts"
+      ],
+      "statement": "What is the difference, if any, between the following terms: a. Reliability vs. availability? b. Security vs. privacy? c. Security enforcement vs. security policy? d. Throughput vs. response time? e. Efficiency vs. overhead? f. Application programming interface (API) vs. abstract virtual machine (AVM)? g. Abstract virtual machine (AVM) vs. hardware abstraction layer (HAL)? h. Proprietary vs. open operating system? i. Batch vs. interactive operating system? j. Host vs. guest operating system?"
+    },
+    {
+      "key": "operating-systems-principles-practice:3",
+      "subjectSlug": "operating-systems-principles-practice",
+      "subjectTitle": "Operating Systems: Principles and Practice",
+      "source": "Operating Systems: Principles and Practice v1 PDF",
+      "chapter": "01",
+      "chapterTitle": "Introduction",
+      "problemId": "3",
+      "problemLabel": "Define direct memory access",
+      "kind": "exercise",
+      "difficulty": "",
+      "pageRef": "Chapter 1 Exercises",
+      "tags": [
+        "os",
+        "hardware"
+      ],
+      "statement": "Define the term, direct memory access (DMA). For the following questions, take a moment to speculate. We provide answers to these questions throughout the book, but, given what you know now, how would you answer them? Before there were operating systems, someone needed to develop solutions without being able to look them up! How would you have designed the first operating system?"
+    },
+    {
+      "key": "operating-systems-principles-practice:4",
+      "subjectSlug": "operating-systems-principles-practice",
+      "subjectTitle": "Operating Systems: Principles and Practice",
+      "source": "Operating Systems: Principles and Practice v1 PDF",
+      "chapter": "01",
+      "chapterTitle": "Introduction",
+      "problemId": "4",
+      "problemLabel": "Resource allocation without fault isolation",
+      "kind": "discussion",
+      "difficulty": "",
+      "pageRef": "Chapter 1 Exercises",
+      "tags": [
+        "os",
+        "resource-management"
+      ],
+      "statement": "Suppose a computer system and all of its applications were completely bug free. Suppose further that everyone in the world were completely honest and trustworthy. In other words, we need not consider fault isolation. a. How should an operating system allocate time on the processor? Should it give the entire processor to each application until it no longer needs it? If there were multiple tasks ready to go at the same time, should it schedule first the task with the least amount of work to do or the one with the most? Justify your answer. b. How should the operating system allocate physical memory to applications? What should happen if the set of applications does not fit in memory at the same time? c. How should the operating system allocate its disk space? Should the first user to ask acquire all of the free space? What would the likely outcome be for that policy?"
+    },
+    {
+      "key": "operating-systems-principles-practice:5",
+      "subjectSlug": "operating-systems-principles-practice",
+      "subjectTitle": "Operating Systems: Principles and Practice",
+      "source": "Operating Systems: Principles and Practice v1 PDF",
+      "chapter": "01",
+      "chapterTitle": "Introduction",
+      "problemId": "5",
+      "problemLabel": "Hardware and OS support for fault isolation",
+      "kind": "discussion",
+      "difficulty": "",
+      "pageRef": "Chapter 1 Exercises",
+      "tags": [
+        "os",
+        "isolation",
+        "security"
+      ],
+      "statement": "Now suppose the computer system needs to support fault isolation. What hardware and/or operating support do you think would be needed to do the following? a. Protect an application’s data structures in memory from being corrupted by other applications. b. Protecting one user’s disk files from being accessed or corrupted by another user. c. Protecting the network from a virus trying to use your computer to send spam."
+    },
+    {
+      "key": "operating-systems-principles-practice:6",
+      "subjectSlug": "operating-systems-principles-practice",
+      "subjectTitle": "Operating Systems: Principles and Practice",
+      "source": "Operating Systems: Principles and Practice v1 PDF",
+      "chapter": "01",
+      "chapterTitle": "Introduction",
+      "problemId": "6",
+      "problemLabel": "Inter-application communication design",
+      "kind": "discussion",
+      "difficulty": "",
+      "pageRef": "Chapter 1 Exercises",
+      "tags": [
+        "os",
+        "communication"
+      ],
+      "statement": "How should an operating system support communication between applications? Explain your reasoning. a. Through the file system? b. Through messages passed between applications? c. Through regions of memory shared between the applications? d. All of the above? e. None of the above?"
+    },
+    {
+      "key": "operating-systems-principles-practice:7",
+      "subjectSlug": "operating-systems-principles-practice",
+      "subjectTitle": "Operating Systems: Principles and Practice",
+      "source": "Operating Systems: Principles and Practice v1 PDF",
+      "chapter": "01",
+      "chapterTitle": "Introduction",
+      "problemId": "7",
+      "problemLabel": "Design a virtual memory illusion",
+      "kind": "design",
+      "difficulty": "",
+      "pageRef": "Chapter 1 Exercises",
+      "tags": [
+        "os",
+        "virtual-memory"
+      ],
+      "statement": "How would you design combined hardware and software support to provide the illusion of a nearly infinite virtual memory on a limited amount of physical memory?"
+    },
+    {
+      "key": "operating-systems-principles-practice:8",
+      "subjectSlug": "operating-systems-principles-practice",
+      "subjectTitle": "Operating Systems: Principles and Practice",
+      "source": "Operating Systems: Principles and Practice v1 PDF",
+      "chapter": "01",
+      "chapterTitle": "Introduction",
+      "problemId": "8",
+      "problemLabel": "Run an OS as an application",
+      "kind": "design",
+      "difficulty": "",
+      "pageRef": "Chapter 1 Exercises",
+      "tags": [
+        "os",
+        "virtualization"
+      ],
+      "statement": "How would you design a system to run an entire operating system as an application on top of another operating system?"
+    },
+    {
+      "key": "operating-systems-principles-practice:9",
+      "subjectSlug": "operating-systems-principles-practice",
+      "subjectTitle": "Operating Systems: Principles and Practice",
+      "source": "Operating Systems: Principles and Practice v1 PDF",
+      "chapter": "01",
+      "chapterTitle": "Introduction",
+      "problemId": "9",
+      "problemLabel": "Crash-consistent disk update design",
+      "kind": "design",
+      "difficulty": "",
+      "pageRef": "Chapter 1 Exercises",
+      "tags": [
+        "os",
+        "storage",
+        "reliability"
+      ],
+      "statement": "How would you design a system to update complex data structures on disk in a consistent fashion despite machine crashes?"
+    },
+    {
+      "key": "operating-systems-principles-practice:10",
+      "subjectSlug": "operating-systems-principles-practice",
+      "subjectTitle": "Operating Systems: Principles and Practice",
+      "source": "Operating Systems: Principles and Practice v1 PDF",
+      "chapter": "01",
+      "chapterTitle": "Introduction",
+      "problemId": "10",
+      "problemLabel": "Government resource management analogy",
+      "kind": "discussion",
+      "difficulty": "",
+      "pageRef": "Chapter 1 Exercises",
+      "tags": [
+        "os",
+        "resource-management"
+      ],
+      "statement": "Society itself must grapple with managing resources. What ways do governments use to allocate resources, isolate misuse, and foster sharing in real life?"
+    },
+    {
+      "key": "operating-systems-principles-practice:11",
+      "subjectSlug": "operating-systems-principles-practice",
+      "subjectTitle": "Operating Systems: Principles and Practice",
+      "source": "Operating Systems: Principles and Practice v1 PDF",
+      "chapter": "01",
+      "chapterTitle": "Introduction",
+      "problemId": "11",
+      "problemLabel": "Ultra-reliable operating system design",
+      "kind": "design",
+      "difficulty": "",
+      "pageRef": "Chapter 1 Exercises",
+      "tags": [
+        "os",
+        "reliability"
+      ],
+      "statement": "Suppose you were tasked with designing and implementing an ultra-reliable and ultra-available operating system. What techniques would you use? What tests, if any, might be sufficient to convince you of the system’s reliability, short of handing your operating system to millions of users to serve as beta testers?"
+    },
+    {
+      "key": "operating-systems-principles-practice:12",
+      "subjectSlug": "operating-systems-principles-practice",
+      "subjectTitle": "Operating Systems: Principles and Practice",
+      "source": "Operating Systems: Principles and Practice v1 PDF",
+      "chapter": "01",
+      "chapterTitle": "Introduction",
+      "problemId": "12",
+      "problemLabel": "Reboot time and availability techniques",
+      "kind": "discussion",
+      "difficulty": "",
+      "pageRef": "Chapter 1 Exercises",
+      "tags": [
+        "os",
+        "availability"
+      ],
+      "statement": "MTTR, and therefore availability, can be improved by reducing the time to reboot a system after a failure. What techniques might you use to speed up booting? Would your techniques always work after a failure?"
+    },
+    {
+      "key": "operating-systems-principles-practice:13",
+      "subjectSlug": "operating-systems-principles-practice",
+      "subjectTitle": "Operating Systems: Principles and Practice",
+      "source": "Operating Systems: Principles and Practice v1 PDF",
+      "chapter": "01",
+      "chapterTitle": "Introduction",
+      "problemId": "13",
+      "problemLabel": "Prioritize OS design goals for current computer",
+      "kind": "discussion",
+      "difficulty": "",
+      "pageRef": "Chapter 1 Exercises",
+      "tags": [
+        "os",
+        "tradeoffs"
+      ],
+      "statement": "For the computer you are currently using, how should the operating system designers prioritize among reliability, security, portability, performance, and adoption? Explain why."
+    },
+    {
+      "key": "operating-systems-principles-practice:2.1",
+      "subjectSlug": "operating-systems-principles-practice",
+      "subjectTitle": "Operating Systems: Principles and Practice",
+      "source": "Operating Systems: Principles and Practice",
+      "chapter": "02",
+      "chapterTitle": "Processes and Threads",
+      "problemId": "2.1",
+      "problemLabel": "Add exercise title or short cue",
+      "kind": "exercise",
+      "difficulty": "",
+      "pageRef": "",
+      "tags": [
+        "processes",
+        "threads"
+      ],
+      "statement": "No problem statement is available yet."
+    },
+    {
+      "key": "program-proofs:1.1",
+      "subjectSlug": "program-proofs",
+      "subjectTitle": "Program Proofs",
+      "source": "Program Proofs",
+      "chapter": "01",
+      "chapterTitle": "Specifications",
+      "problemId": "1.1",
+      "problemLabel": "Add exercise title or short cue",
+      "kind": "proof",
+      "difficulty": "",
+      "pageRef": "",
+      "tags": [
+        "specifications"
+      ],
+      "statement": "No problem statement is available yet."
+    },
+    {
+      "key": "program-proofs:2.1",
+      "subjectSlug": "program-proofs",
+      "subjectTitle": "Program Proofs",
+      "source": "Program Proofs",
+      "chapter": "02",
+      "chapterTitle": "Invariants",
+      "problemId": "2.1",
+      "problemLabel": "Add exercise title or short cue",
+      "kind": "proof",
+      "difficulty": "",
+      "pageRef": "",
+      "tags": [
+        "invariants"
+      ],
+      "statement": "No problem statement is available yet."
+    }
+  ]
+}
