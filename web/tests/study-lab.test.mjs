@@ -5,8 +5,9 @@ import test from "node:test";
 const root = new URL("../", import.meta.url);
 
 test("syncs the repository problem inventories", async () => {
-  const [data, practice] = await Promise.all([
+  const [data, ostep, practice] = await Promise.all([
     readFile(new URL("public/problems.json", root), "utf8").then(JSON.parse),
+    readFile(new URL("public/ostep-labs.json", root), "utf8").then(JSON.parse),
     readFile(new URL("public/chapter-practice.json", root), "utf8").then(JSON.parse),
   ]);
 
@@ -43,6 +44,17 @@ test("syncs the repository problem inventories", async () => {
       chapter.leetcode.every((problem) => problem.url.startsWith("https://leetcode.com/")),
     ),
   );
+  assert.equal(ostep.problems.length, 12);
+  assert.equal(new Set(ostep.problems.map((problem) => problem.chapter)).size, 3);
+  assert.ok(
+    ostep.problems.every(
+      (problem) =>
+        problem.subjectSlug === "operating-systems-three-easy-pieces" &&
+        problem.lab.runtime === "javascript" &&
+        problem.lab.sourceUrl.startsWith("https://pages.cs.wisc.edu/~remzi/OSTEP/") &&
+        problem.lab.checkCount > 0,
+    ),
+  );
 });
 
 test("uses the finished Study Lab interface", async () => {
@@ -68,6 +80,11 @@ test("uses the finished Study Lab interface", async () => {
   assert.match(page, /covers\/operating-systems-principles-practice\.png/);
   assert.match(page, /covers\/program-proofs\.jpg/);
   assert.match(page, /Sol daily cap/);
+  assert.match(page, /Compile & run online/);
+  assert.match(page, /isolated browser worker/);
+  assert.match(page, /Official simulators/);
+  assert.match(page, /runJavascriptLab/);
+  assert.match(page, /solutionSnapshot: answer/);
   assert.match(page, /Ready to move on/);
   assert.match(page, /<Markdown className="grade-summary">\{grade\.summary\}<\/Markdown>/);
   assert.match(page, /<Markdown>\{grade\.nextStep\}<\/Markdown>/);
@@ -82,6 +99,8 @@ test("uses the finished Study Lab interface", async () => {
   assert.match(grader, /maximum: 10/);
   assert.match(grader, /HOURLY_GRADING_LIMIT = 30/);
   assert.match(grader, /GRADING_RATE_LIMIT/);
+  assert.match(grader, /browser programming labs/);
+  assert.match(grader, /solutionSnapshot/);
   assert.match(viteConfig, /command === "serve"/);
   assert.match(proxy, /Study Lab authentication required/);
   assert.equal(JSON.parse(railwayConfig).deploy.healthcheckPath, "/api/health");

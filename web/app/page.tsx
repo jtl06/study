@@ -21,6 +21,28 @@ type Problem = {
   pageRef: string;
   tags: string[];
   statement: string;
+  lab?: LabConfig;
+};
+
+type LabConfig = {
+  runtime: "javascript";
+  sourceUrl: string;
+  homeworkUrl: string;
+  goal: string;
+  starterCode: string;
+  testCode: string;
+  checkCount: number;
+};
+
+type LabSubmission = {
+  version: 1;
+  type: "ostep-lab";
+  code: string;
+  output: string;
+  notes: string;
+  passed: number;
+  total: number;
+  ranAt: string | null;
 };
 
 type StudyStatus = "not-started" | "working" | "review" | "done";
@@ -93,6 +115,185 @@ const subjectCovers: Record<string, string> = {
   "program-proofs": "/covers/program-proofs.jpg",
 };
 
+function emptyLabSubmission(lab: LabConfig): LabSubmission {
+  return {
+    version: 1,
+    type: "ostep-lab",
+    code: lab.starterCode,
+    output: "",
+    notes: "",
+    passed: 0,
+    total: lab.checkCount,
+    ranAt: null,
+  };
+}
+
+function parseLabSubmission(content: string, lab: LabConfig): LabSubmission {
+  try {
+    const parsed = JSON.parse(content) as Partial<LabSubmission>;
+    if (parsed.type === "ostep-lab" && typeof parsed.code === "string") {
+      return {
+        ...emptyLabSubmission(lab),
+        ...parsed,
+        version: 1,
+        type: "ostep-lab",
+      };
+    }
+  } catch {
+    // Older plain-text answers become the reflection instead of being discarded.
+  }
+  return {
+    ...emptyLabSubmission(lab),
+    notes: content.trim() ? content : "",
+  };
+}
+
+function serializeLabSubmission(submission: LabSubmission) {
+  return JSON.stringify(submission);
+}
+
+function submissionIsAttempted(problem: Problem, answer: string) {
+  if (!problem.lab) return Boolean(answer.trim());
+  const submission = parseLabSubmission(answer, problem.lab);
+  return Boolean(
+    submission.output.trim() ||
+      submission.notes.trim() ||
+      submission.code.trim() !== problem.lab.starterCode.trim(),
+  );
+}
+
+function graderSubmission(problem: Problem, answer: string) {
+  if (!problem.lab) return answer;
+  const submission = parseLabSubmission(answer, problem.lab);
+  return [
+    "Submission type: browser-based JavaScript operating-systems lab",
+    `Built-in checks reported: ${submission.passed}/${submission.total}`,
+    "",
+    "## Student code",
+    "```javascript",
+    submission.code,
+    "```",
+    "",
+    "## Captured browser output",
+    "```text",
+    submission.output || "(The student has not run the lab.)",
+    "```",
+    "",
+    "## Student reflection",
+    submission.notes || "(No reflection supplied.)",
+  ].join("\n");
+}
+
+function runJavascriptLab(code: string, tests: string, timeoutMs = 2500) {
+  return new Promise<{
+    output: string;
+    passed: number;
+    total: number;
+    succeeded: boolean;
+  }>((resolve) => {
+    const workerSource = `
+self.onmessage = ({ data }) => {
+  const logs = [];
+  const failures = [];
+  let passed = 0;
+  let total = 0;
+  const render = (value) => {
+    if (typeof value === "string") return value;
+    try { return JSON.stringify(value, null, 2); }
+    catch { return String(value); }
+  };
+  const labConsole = {
+    log: (...values) => logs.push(values.map(render).join(" ")),
+    error: (...values) => logs.push("ERROR: " + values.map(render).join(" ")),
+    warn: (...values) => logs.push("WARN: " + values.map(render).join(" "))
+  };
+  const assert = (condition, label = "check") => {
+    total += 1;
+    if (condition) passed += 1;
+    else failures.push(label);
+  };
+  const assertEqual = (actual, expected, label = "check") => {
+    assert(JSON.stringify(actual) === JSON.stringify(expected),
+      label + " — expected " + render(expected) + ", received " + render(actual));
+  };
+  try {
+    const execute = new Function(
+      "console", "assert", "assertEqual", "fetch", "WebSocket",
+      "XMLHttpRequest", "importScripts",
+      '"use strict";\\n' + data.code + '\\n' + data.tests
+    );
+    execute(labConsole, assert, assertEqual, undefined, undefined, undefined, undefined);
+    self.postMessage({ logs, failures, passed, total });
+  } catch (error) {
+    self.postMessage({
+      logs,
+      failures,
+      passed,
+      total,
+      runtimeError: error instanceof Error ? error.stack || error.message : String(error)
+    });
+  }
+};`;
+    const objectUrl = URL.createObjectURL(
+      new Blob([workerSource], { type: "text/javascript" }),
+    );
+    const worker = new Worker(objectUrl);
+    let settled = false;
+    const finish = (result: {
+      output: string;
+      passed: number;
+      total: number;
+      succeeded: boolean;
+    }) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timeout);
+      worker.terminate();
+      URL.revokeObjectURL(objectUrl);
+      resolve(result);
+    };
+    const timeout = window.setTimeout(() => {
+      finish({
+        output: `Execution stopped after ${timeoutMs / 1000} seconds.`,
+        passed: 0,
+        total: 0,
+        succeeded: false,
+      });
+    }, timeoutMs);
+    worker.onmessage = (event: MessageEvent<{
+      logs: string[];
+      failures: string[];
+      passed: number;
+      total: number;
+      runtimeError?: string;
+    }>) => {
+      const { logs, failures, passed, total, runtimeError } = event.data;
+      const summary = runtimeError
+        ? `Runtime error\n${runtimeError}`
+        : failures.length
+          ? `✗ ${passed}/${total} checks passed\n${failures
+              .map((failure) => `• ${failure}`)
+              .join("\n")}`
+          : `✓ ${passed}/${total} checks passed`;
+      finish({
+        output: [...logs, summary].filter(Boolean).join("\n"),
+        passed,
+        total,
+        succeeded: !runtimeError && failures.length === 0,
+      });
+    };
+    worker.onerror = (event) => {
+      finish({
+        output: `Worker error: ${event.message}`,
+        passed: 0,
+        total: 0,
+        succeeded: false,
+      });
+    };
+    worker.postMessage({ code, tests });
+  });
+}
+
 function solutionKey(subjectSlug: string, problemId: string) {
   return `${subjectSlug}:${problemId}`;
 }
@@ -152,11 +353,13 @@ export default function Home() {
     completed: number;
     total: number;
   } | null>(null);
+  const [labRunState, setLabRunState] = useState<"idle" | "running">("idle");
 
   useEffect(() => {
     let cancelled = false;
     Promise.all([
       fetch("/problems.json").then((response) => response.json()),
+      fetch("/ostep-labs.json").then((response) => response.json()),
       fetch("/chapter-practice.json").then((response) => response.json()),
       fetch("/problem-guides.json").then((response) => response.json()),
       fetch("/api/solutions").then((response) => {
@@ -164,9 +367,12 @@ export default function Home() {
         return response.json();
       }),
     ])
-      .then(([problemData, practiceData, guideData, solutionData]) => {
+      .then(([problemData, ostepData, practiceData, guideData, solutionData]) => {
         if (cancelled) return;
-        const nextProblems = problemData.problems as Problem[];
+        const nextProblems = [
+          ...(problemData.problems as Problem[]),
+          ...(ostepData.problems as Problem[]),
+        ];
         const problemKeys = new Set(nextProblems.map((problem) => problem.key));
         const nextSolutions = Object.fromEntries(
           (solutionData.solutions as Solution[])
@@ -250,6 +456,11 @@ export default function Home() {
     () => problems.find((problem) => problem.key === selectedKey) ?? null,
     [problems, selectedKey],
   );
+  const currentLab = currentProblem?.lab ?? null;
+  const labSubmission = useMemo(
+    () => (currentLab ? parseLabSubmission(content, currentLab) : null),
+    [content, currentLab],
+  );
 
   const currentGuide = currentProblem ? guides[currentProblem.key] ?? null : null;
   const statementView =
@@ -322,6 +533,7 @@ export default function Home() {
     setGradeState("idle");
     setGradeError("");
     setGrade(null);
+    setLabRunState("idle");
 
     Promise.all([
       fetch(
@@ -406,7 +618,7 @@ export default function Home() {
       problem.key === currentProblem?.key
         ? content
         : solutions[problem.key]?.content ?? "";
-    return Boolean(answer.trim());
+    return submissionIsAttempted(problem, answer);
   }).length;
   const gradingPercent = batchProgress
     ? Math.round((batchProgress.completed / batchProgress.total) * 100)
@@ -417,21 +629,25 @@ export default function Home() {
     setDirty(true);
   }
 
-  function handleEditorKeyDown(event: ReactKeyboardEvent<HTMLTextAreaElement>) {
+  function handleTextareaTab(
+    event: ReactKeyboardEvent<HTMLTextAreaElement>,
+    value: string,
+    onChange: (nextValue: string) => void,
+  ) {
     if (event.key !== "Tab") return;
     event.preventDefault();
 
     const textarea = event.currentTarget;
     const cursor = textarea.selectionStart;
     const indentation = " ".repeat(indentWidth);
-    const lineStart = content.lastIndexOf("\n", cursor - 1) + 1;
+    const lineStart = value.lastIndexOf("\n", cursor - 1) + 1;
 
     if (event.shiftKey) {
-      const linePrefix = content.slice(lineStart, cursor);
+      const linePrefix = value.slice(lineStart, cursor);
       const spacesToRemove = Math.min(indentWidth, (linePrefix.match(/^ */) ?? [""])[0].length);
       if (!spacesToRemove) return;
-      changeContent(
-        `${content.slice(0, lineStart)}${content.slice(lineStart + spacesToRemove)}`,
+      onChange(
+        `${value.slice(0, lineStart)}${value.slice(lineStart + spacesToRemove)}`,
       );
       window.requestAnimationFrame(() => {
         const nextCursor = Math.max(lineStart, cursor - spacesToRemove);
@@ -441,11 +657,36 @@ export default function Home() {
       return;
     }
 
-    changeContent(`${content.slice(0, cursor)}${indentation}${content.slice(cursor)}`);
+    onChange(`${value.slice(0, cursor)}${indentation}${value.slice(cursor)}`);
     window.requestAnimationFrame(() => {
       textarea.selectionStart = cursor + indentWidth;
       textarea.selectionEnd = cursor + indentWidth;
     });
+  }
+
+  function handleEditorKeyDown(event: ReactKeyboardEvent<HTMLTextAreaElement>) {
+    handleTextareaTab(event, content, changeContent);
+  }
+
+  function updateLabSubmission(patch: Partial<LabSubmission>) {
+    if (!labSubmission) return;
+    changeContent(serializeLabSubmission({ ...labSubmission, ...patch }));
+  }
+
+  async function runCurrentLab() {
+    if (!currentLab || !labSubmission || labRunState === "running") return;
+    setLabRunState("running");
+    const result = await runJavascriptLab(
+      labSubmission.code,
+      currentLab.testCode,
+    );
+    updateLabSubmission({
+      output: result.output,
+      passed: result.passed,
+      total: result.total || currentLab.checkCount,
+      ranAt: new Date().toISOString(),
+    });
+    setLabRunState("idle");
   }
 
   function changeStatus(value: StudyStatus) {
@@ -461,6 +702,7 @@ export default function Home() {
   }
 
   async function requestGrade(problem: Problem, answer: string) {
+    const formattedAnswer = graderSubmission(problem, answer);
     const response = await fetch("/api/grade", {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -473,7 +715,8 @@ export default function Home() {
           kind: problem.kind,
           difficulty: problem.difficulty,
           statement: problem.statement,
-          solution: answer,
+          solution: formattedAnswer,
+          solutionSnapshot: answer,
           model: gradeModel,
         }),
       });
@@ -522,7 +765,7 @@ export default function Home() {
   async function gradeCurrentProblem() {
     if (
       !currentProblem ||
-      !content.trim() ||
+      !submissionIsAttempted(currentProblem, content) ||
       gradeState === "grading" ||
       batchProgress
     ) {
@@ -565,7 +808,7 @@ export default function Home() {
             ? content
             : solutions[problem.key]?.content ?? "",
       }))
-      .filter(({ answer }) => answer.trim());
+      .filter(({ problem, answer }) => submissionIsAttempted(problem, answer));
 
     if (!queue.length) {
       setGradeError("There are no attempted problems to grade yet.");
@@ -690,9 +933,15 @@ export default function Home() {
                 className={subjectFilter === subject.slug ? "active" : ""}
                 onClick={() => setSubjectFilter(subject.slug)}
               >
-                <span className="subject-icon cover">
-                  <img src={subjectCovers[subject.slug]} alt="" />
-                </span>
+                {subjectCovers[subject.slug] ? (
+                  <span className="subject-icon cover">
+                    <img src={subjectCovers[subject.slug]} alt="" />
+                  </span>
+                ) : (
+                  <span className="subject-icon cover ostep-cover" aria-hidden="true">
+                    OS
+                  </span>
+                )}
                 <span>{subject.title}</span>
                 <small>{count}</small>
               </button>
@@ -854,7 +1103,7 @@ export default function Home() {
                   className="grade-button"
                   onClick={gradeCurrentProblem}
                   disabled={
-                    !content.trim() ||
+                    !submissionIsAttempted(currentProblem, content) ||
                     gradeState === "grading" ||
                     Boolean(batchProgress) ||
                     (gradeModel === "gpt-5.6-sol" && solBudget?.remaining === 0)
@@ -985,6 +1234,29 @@ export default function Home() {
                 ) : (
                   <>
                     <Markdown className="problem-copy">{currentProblem.statement}</Markdown>
+                    {currentLab && (
+                      <div className="ostep-source-strip">
+                        <div>
+                          <span>OSTEP companion overlay</span>
+                          <strong>{currentLab.goal}</strong>
+                        </div>
+                        <div>
+                          <a href={currentLab.sourceUrl} target="_blank" rel="noreferrer">
+                            Read chapter ↗
+                          </a>
+                          <a href={currentLab.homeworkUrl} target="_blank" rel="noreferrer">
+                            Official simulators ↗
+                          </a>
+                          <a
+                            href="https://github.com/remzi-arpacidusseau/ostep-projects"
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Advanced projects ↗
+                          </a>
+                        </div>
+                      </div>
+                    )}
                     {!!currentProblem.tags.length && (
                       <div className="tag-row">
                         {currentProblem.tags.map((tag) => (
@@ -996,59 +1268,193 @@ export default function Home() {
                 )}
               </article>
 
-              <section className="solution-card">
-                <div className="editor-toolbar">
-                  <div>
-                    <button
-                      className={view === "write" ? "active" : ""}
-                      onClick={() => setView("write")}
-                    >
-                      Write
-                    </button>
-                    <button
-                      className={view === "preview" ? "active" : ""}
-                      onClick={() => setView("preview")}
-                    >
-                      Preview
-                    </button>
+              {currentLab && labSubmission ? (
+                <section className="lab-card" aria-label="Browser programming lab">
+                  <header className="lab-toolbar">
+                    <div>
+                      <span className="runtime-dot" aria-hidden="true" />
+                      <div>
+                        <strong>Compile & run online</strong>
+                        <small>JavaScript simulation · isolated browser worker</small>
+                      </div>
+                    </div>
+                    <div className="lab-actions">
+                      <label htmlFor="lab-indent-width">Indent</label>
+                      <select
+                        id="lab-indent-width"
+                        value={indentWidth}
+                        onChange={(event) =>
+                          setIndentWidth(Number(event.target.value) as 2 | 4)
+                        }
+                        aria-label="Lab indent width"
+                      >
+                        <option value="2">2 spaces</option>
+                        <option value="4">4 spaces</option>
+                      </select>
+                      <button
+                        className="lab-reset-button"
+                        onClick={() =>
+                          updateLabSubmission({
+                            ...emptyLabSubmission(currentLab),
+                            notes: labSubmission.notes,
+                          })
+                        }
+                        disabled={labRunState === "running"}
+                      >
+                        Reset code
+                      </button>
+                      <button
+                        className="lab-run-button"
+                        onClick={runCurrentLab}
+                        disabled={labRunState === "running"}
+                      >
+                        {labRunState === "running" ? "Running…" : "▶ Run lab"}
+                      </button>
+                    </div>
+                  </header>
+
+                  <div className="lab-grid">
+                    <div className="lab-pane code-pane">
+                      <div className="lab-pane-heading">
+                        <span>main.js</span>
+                        <small>Tab inserts {indentWidth} spaces</small>
+                      </div>
+                      <textarea
+                        value={labSubmission.code}
+                        onChange={(event) =>
+                          updateLabSubmission({
+                            code: event.target.value,
+                            output: "",
+                            passed: 0,
+                            ranAt: null,
+                          })
+                        }
+                        onKeyDown={(event) =>
+                          handleTextareaTab(
+                            event,
+                            labSubmission.code,
+                            (code) =>
+                              updateLabSubmission({
+                                code,
+                                output: "",
+                                passed: 0,
+                                ranAt: null,
+                              }),
+                          )
+                        }
+                        aria-label="Lab code editor"
+                        spellCheck={false}
+                        wrap="off"
+                      />
+                    </div>
+                    <div className="lab-pane output-pane">
+                      <div className="lab-pane-heading">
+                        <span>Output</span>
+                        <small>
+                          {labSubmission.ranAt
+                            ? `${labSubmission.passed}/${labSubmission.total} checks`
+                            : `${currentLab.checkCount} hidden checks`}
+                        </small>
+                      </div>
+                      <pre
+                        className={
+                          labSubmission.ranAt &&
+                          labSubmission.passed === labSubmission.total
+                            ? "passed"
+                            : ""
+                        }
+                        aria-live="polite"
+                      >
+                        {labRunState === "running"
+                          ? "Compiling and running in the browser…"
+                          : labSubmission.output ||
+                            "Run the lab to compile your code and execute the checks."}
+                      </pre>
+                    </div>
                   </div>
-                  <div className="editor-tools">
-                    <label htmlFor="indent-width">Indent</label>
-                    <select
-                      id="indent-width"
-                      value={indentWidth}
+
+                  <div className="lab-reflection">
+                    <div>
+                      <strong>Explain your result</strong>
+                      <span>
+                        Sol grades the code, captured output, and your reasoning together.
+                      </span>
+                    </div>
+                    <textarea
+                      value={labSubmission.notes}
                       onChange={(event) =>
-                        setIndentWidth(Number(event.target.value) as 2 | 4)
+                        updateLabSubmission({ notes: event.target.value })
                       }
-                      aria-label="Indent width"
-                    >
-                      <option value="2">2 spaces</option>
-                      <option value="4">4 spaces</option>
-                    </select>
-                    <span>Markdown + LaTeX</span>
+                      onKeyDown={(event) =>
+                        handleTextareaTab(
+                          event,
+                          labSubmission.notes,
+                          (notes) => updateLabSubmission({ notes }),
+                        )
+                      }
+                      placeholder="Explain the operating-systems idea, edge cases, and what the run demonstrates…"
+                      aria-label="Lab reflection"
+                      spellCheck
+                    />
                   </div>
-                </div>
-                {view === "write" ? (
-                  <textarea
-                    value={content}
-                    onChange={(event) => changeContent(event.target.value)}
-                    onKeyDown={handleEditorKeyDown}
-                    placeholder={
-                      "Start with the core idea. Then make the argument precise…\n\n## Approach\n\n## Verification\n"
-                    }
-                    aria-label="Solution editor"
-                    spellCheck
-                  />
-                ) : (
-                  <div className="solution-preview">
-                    {content.trim() ? (
-                      <Markdown>{content}</Markdown>
-                    ) : (
-                      <p className="preview-empty">Your rendered solution will appear here.</p>
-                    )}
+                </section>
+              ) : (
+                <section className="solution-card">
+                  <div className="editor-toolbar">
+                    <div>
+                      <button
+                        className={view === "write" ? "active" : ""}
+                        onClick={() => setView("write")}
+                      >
+                        Write
+                      </button>
+                      <button
+                        className={view === "preview" ? "active" : ""}
+                        onClick={() => setView("preview")}
+                      >
+                        Preview
+                      </button>
+                    </div>
+                    <div className="editor-tools">
+                      <label htmlFor="indent-width">Indent</label>
+                      <select
+                        id="indent-width"
+                        value={indentWidth}
+                        onChange={(event) =>
+                          setIndentWidth(Number(event.target.value) as 2 | 4)
+                        }
+                        aria-label="Indent width"
+                      >
+                        <option value="2">2 spaces</option>
+                        <option value="4">4 spaces</option>
+                      </select>
+                      <span>Markdown + LaTeX</span>
+                    </div>
                   </div>
-                )}
-              </section>
+                  {view === "write" ? (
+                    <textarea
+                      value={content}
+                      onChange={(event) => changeContent(event.target.value)}
+                      onKeyDown={handleEditorKeyDown}
+                      placeholder={
+                        "Start with the core idea. Then make the argument precise…\n\n## Approach\n\n## Verification\n"
+                      }
+                      aria-label="Solution editor"
+                      spellCheck
+                    />
+                  ) : (
+                    <div className="solution-preview">
+                      {content.trim() ? (
+                        <Markdown>{content}</Markdown>
+                      ) : (
+                        <p className="preview-empty">
+                          Your rendered solution will appear here.
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </section>
+              )}
 
               {gradeError && (
                 <div className="grade-error" role="alert">
