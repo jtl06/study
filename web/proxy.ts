@@ -1,9 +1,22 @@
 import { env } from "cloudflare:workers";
 import { NextResponse } from "next/server";
 
+const isolationHeaders = {
+  "Cross-Origin-Opener-Policy": "same-origin",
+  "Cross-Origin-Embedder-Policy": "require-corp",
+};
+
+function isolatedNextResponse() {
+  const response = NextResponse.next();
+  Object.entries(isolationHeaders).forEach(([name, value]) =>
+    response.headers.set(name, value),
+  );
+  return response;
+}
+
 export function proxy(request: Request) {
   const url = new URL(request.url);
-  if (url.pathname === "/api/health") return NextResponse.next();
+  if (url.pathname === "/api/health") return isolatedNextResponse();
 
   const runtimeEnv = env as unknown as {
     SITE_USERNAME?: string;
@@ -13,7 +26,7 @@ export function proxy(request: Request) {
   const password = runtimeEnv.SITE_PASSWORD;
 
   // Keep local development frictionless. Railway provides both values.
-  if (!username || !password) return NextResponse.next();
+  if (!username || !password) return isolatedNextResponse();
 
   const authorization = request.headers.get("authorization");
   if (authorization?.startsWith("Basic ")) {
@@ -25,7 +38,7 @@ export function proxy(request: Request) {
         credentials.slice(0, separator) === username &&
         credentials.slice(separator + 1) === password
       ) {
-        return NextResponse.next();
+        return isolatedNextResponse();
       }
     } catch {
       // Fall through to the authentication challenge.
@@ -37,6 +50,7 @@ export function proxy(request: Request) {
     headers: {
       "Cache-Control": "no-store",
       "WWW-Authenticate": 'Basic realm="Study Lab", charset="UTF-8"',
+      ...isolationHeaders,
     },
   });
 }

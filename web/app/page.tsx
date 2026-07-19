@@ -6,6 +6,7 @@ import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import "katex/dist/katex.min.css";
+import { compileAndRunC } from "./c-runner";
 
 type Problem = {
   key: string;
@@ -25,7 +26,7 @@ type Problem = {
 };
 
 type LabConfig = {
-  runtime: "javascript";
+  runtime: "c";
   sourceUrl: string;
   homeworkUrl: string;
   goal: string;
@@ -35,8 +36,9 @@ type LabConfig = {
 };
 
 type LabSubmission = {
-  version: 1;
+  version: 2;
   type: "ostep-lab";
+  language: "c";
   code: string;
   output: string;
   notes: string;
@@ -44,6 +46,8 @@ type LabSubmission = {
   total: number;
   ranAt: string | null;
 };
+
+type LabRunState = "idle" | "loading" | "compiling" | "running";
 
 type StudyStatus = "not-started" | "working" | "review" | "done";
 type GradingModel = "gpt-5.6-luna" | "gpt-5.6-sol";
@@ -117,8 +121,9 @@ const subjectCovers: Record<string, string> = {
 
 function emptyLabSubmission(lab: LabConfig): LabSubmission {
   return {
-    version: 1,
+    version: 2,
     type: "ostep-lab",
+    language: "c",
     code: lab.starterCode,
     output: "",
     notes: "",
@@ -131,12 +136,23 @@ function emptyLabSubmission(lab: LabConfig): LabSubmission {
 function parseLabSubmission(content: string, lab: LabConfig): LabSubmission {
   try {
     const parsed = JSON.parse(content) as Partial<LabSubmission>;
-    if (parsed.type === "ostep-lab" && typeof parsed.code === "string") {
+    if (
+      parsed.type === "ostep-lab" &&
+      parsed.language === "c" &&
+      typeof parsed.code === "string"
+    ) {
       return {
         ...emptyLabSubmission(lab),
         ...parsed,
-        version: 1,
+        version: 2,
         type: "ostep-lab",
+        language: "c",
+      };
+    }
+    if (parsed.type === "ostep-lab") {
+      return {
+        ...emptyLabSubmission(lab),
+        notes: typeof parsed.notes === "string" ? parsed.notes : "",
       };
     }
   } catch {
@@ -166,11 +182,11 @@ function graderSubmission(problem: Problem, answer: string) {
   if (!problem.lab) return answer;
   const submission = parseLabSubmission(answer, problem.lab);
   return [
-    "Submission type: browser-based JavaScript operating-systems lab",
+    "Submission type: browser-compiled C17 operating-systems lab",
     `Built-in checks reported: ${submission.passed}/${submission.total}`,
     "",
     "## Student code",
-    "```javascript",
+    "```c",
     submission.code,
     "```",
     "",
@@ -182,116 +198,6 @@ function graderSubmission(problem: Problem, answer: string) {
     "## Student reflection",
     submission.notes || "(No reflection supplied.)",
   ].join("\n");
-}
-
-function runJavascriptLab(code: string, tests: string, timeoutMs = 2500) {
-  return new Promise<{
-    output: string;
-    passed: number;
-    total: number;
-    succeeded: boolean;
-  }>((resolve) => {
-    const workerSource = `
-self.onmessage = ({ data }) => {
-  const logs = [];
-  const failures = [];
-  let passed = 0;
-  let total = 0;
-  const render = (value) => {
-    if (typeof value === "string") return value;
-    try { return JSON.stringify(value, null, 2); }
-    catch { return String(value); }
-  };
-  const labConsole = {
-    log: (...values) => logs.push(values.map(render).join(" ")),
-    error: (...values) => logs.push("ERROR: " + values.map(render).join(" ")),
-    warn: (...values) => logs.push("WARN: " + values.map(render).join(" "))
-  };
-  const assert = (condition, label = "check") => {
-    total += 1;
-    if (condition) passed += 1;
-    else failures.push(label);
-  };
-  const assertEqual = (actual, expected, label = "check") => {
-    assert(JSON.stringify(actual) === JSON.stringify(expected),
-      label + " — expected " + render(expected) + ", received " + render(actual));
-  };
-  try {
-    const execute = new Function(
-      "console", "assert", "assertEqual", "fetch", "WebSocket",
-      "XMLHttpRequest", "importScripts",
-      '"use strict";\\n' + data.code + '\\n' + data.tests
-    );
-    execute(labConsole, assert, assertEqual, undefined, undefined, undefined, undefined);
-    self.postMessage({ logs, failures, passed, total });
-  } catch (error) {
-    self.postMessage({
-      logs,
-      failures,
-      passed,
-      total,
-      runtimeError: error instanceof Error ? error.stack || error.message : String(error)
-    });
-  }
-};`;
-    const objectUrl = URL.createObjectURL(
-      new Blob([workerSource], { type: "text/javascript" }),
-    );
-    const worker = new Worker(objectUrl);
-    let settled = false;
-    const finish = (result: {
-      output: string;
-      passed: number;
-      total: number;
-      succeeded: boolean;
-    }) => {
-      if (settled) return;
-      settled = true;
-      window.clearTimeout(timeout);
-      worker.terminate();
-      URL.revokeObjectURL(objectUrl);
-      resolve(result);
-    };
-    const timeout = window.setTimeout(() => {
-      finish({
-        output: `Execution stopped after ${timeoutMs / 1000} seconds.`,
-        passed: 0,
-        total: 0,
-        succeeded: false,
-      });
-    }, timeoutMs);
-    worker.onmessage = (event: MessageEvent<{
-      logs: string[];
-      failures: string[];
-      passed: number;
-      total: number;
-      runtimeError?: string;
-    }>) => {
-      const { logs, failures, passed, total, runtimeError } = event.data;
-      const summary = runtimeError
-        ? `Runtime error\n${runtimeError}`
-        : failures.length
-          ? `✗ ${passed}/${total} checks passed\n${failures
-              .map((failure) => `• ${failure}`)
-              .join("\n")}`
-          : `✓ ${passed}/${total} checks passed`;
-      finish({
-        output: [...logs, summary].filter(Boolean).join("\n"),
-        passed,
-        total,
-        succeeded: !runtimeError && failures.length === 0,
-      });
-    };
-    worker.onerror = (event) => {
-      finish({
-        output: `Worker error: ${event.message}`,
-        passed: 0,
-        total: 0,
-        succeeded: false,
-      });
-    };
-    worker.postMessage({ code, tests });
-  });
 }
 
 function solutionKey(subjectSlug: string, problemId: string) {
@@ -353,7 +259,7 @@ export default function Home() {
     completed: number;
     total: number;
   } | null>(null);
-  const [labRunState, setLabRunState] = useState<"idle" | "running">("idle");
+  const [labRunState, setLabRunState] = useState<LabRunState>("idle");
 
   useEffect(() => {
     let cancelled = false;
@@ -674,11 +580,12 @@ export default function Home() {
   }
 
   async function runCurrentLab() {
-    if (!currentLab || !labSubmission || labRunState === "running") return;
-    setLabRunState("running");
-    const result = await runJavascriptLab(
+    if (!currentLab || !labSubmission || labRunState !== "idle") return;
+    setLabRunState("loading");
+    const result = await compileAndRunC(
       labSubmission.code,
       currentLab.testCode,
+      setLabRunState,
     );
     updateLabSubmission({
       output: result.output,
@@ -1275,7 +1182,7 @@ export default function Home() {
                       <span className="runtime-dot" aria-hidden="true" />
                       <div>
                         <strong>Compile & run online</strong>
-                        <small>JavaScript simulation · isolated browser worker</small>
+                        <small>C17 · Clang/WASI · compiled entirely in your browser</small>
                       </div>
                     </div>
                     <div className="lab-actions">
@@ -1299,16 +1206,22 @@ export default function Home() {
                             notes: labSubmission.notes,
                           })
                         }
-                        disabled={labRunState === "running"}
+                        disabled={labRunState !== "idle"}
                       >
                         Reset code
                       </button>
                       <button
                         className="lab-run-button"
                         onClick={runCurrentLab}
-                        disabled={labRunState === "running"}
+                        disabled={labRunState !== "idle"}
                       >
-                        {labRunState === "running" ? "Running…" : "▶ Run lab"}
+                        {labRunState === "loading"
+                          ? "Loading Clang…"
+                          : labRunState === "compiling"
+                            ? "Compiling…"
+                            : labRunState === "running"
+                              ? "Running…"
+                              : "▶ Compile & run"}
                       </button>
                     </div>
                   </header>
@@ -1316,7 +1229,7 @@ export default function Home() {
                   <div className="lab-grid">
                     <div className="lab-pane code-pane">
                       <div className="lab-pane-heading">
-                        <span>main.js</span>
+                        <span>main.c</span>
                         <small>Tab inserts {indentWidth} spaces</small>
                       </div>
                       <textarea
@@ -1365,10 +1278,14 @@ export default function Home() {
                         }
                         aria-live="polite"
                       >
-                        {labRunState === "running"
-                          ? "Compiling and running in the browser…"
+                        {labRunState !== "idle"
+                          ? labRunState === "loading"
+                            ? "Loading the browser Clang toolchain…\nThe first download may take a minute."
+                            : labRunState === "compiling"
+                              ? "Compiling main.c with Clang…"
+                              : "Running the compiled WebAssembly program…"
                           : labSubmission.output ||
-                            "Run the lab to compile your code and execute the checks."}
+                            "Compile the C program and run the checks. The first run downloads the browser toolchain and may take a minute."}
                       </pre>
                     </div>
                   </div>

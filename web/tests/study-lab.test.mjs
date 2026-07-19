@@ -50,7 +50,9 @@ test("syncs the repository problem inventories", async () => {
     ostep.problems.every(
       (problem) =>
         problem.subjectSlug === "operating-systems-three-easy-pieces" &&
-        problem.lab.runtime === "javascript" &&
+        problem.lab.runtime === "c" &&
+        problem.kind === "C lab" &&
+        !problem.lab.starterCode.includes("function ") &&
         problem.lab.sourceUrl.startsWith("https://pages.cs.wisc.edu/~remzi/OSTEP/") &&
         problem.lab.checkCount > 0,
     ),
@@ -58,13 +60,16 @@ test("syncs the repository problem inventories", async () => {
 });
 
 test("uses the finished Study Lab interface", async () => {
-  const [page, layout, grader, viteConfig, proxy, railwayConfig] = await Promise.all([
+  const [page, worker, layout, grader, viteConfig, proxy, railwayConfig, packageJson] =
+    await Promise.all([
     readFile(new URL("app/page.tsx", root), "utf8"),
+    readFile(new URL("app/c-runner.ts", root), "utf8"),
     readFile(new URL("app/layout.tsx", root), "utf8"),
     readFile(new URL("app/api/grade/route.ts", root), "utf8"),
     readFile(new URL("vite.config.ts", root), "utf8"),
     readFile(new URL("proxy.ts", root), "utf8"),
     readFile(new URL("railway.json", root), "utf8"),
+    readFile(new URL("package.json", root), "utf8").then(JSON.parse),
   ]);
 
   assert.match(layout, /title:\s*"Study Lab"/);
@@ -81,9 +86,11 @@ test("uses the finished Study Lab interface", async () => {
   assert.match(page, /covers\/program-proofs\.jpg/);
   assert.match(page, /Sol daily cap/);
   assert.match(page, /Compile & run online/);
-  assert.match(page, /isolated browser worker/);
+  assert.match(page, /C17 · Clang\/WASI/);
+  assert.match(page, /main\.c/);
   assert.match(page, /Official simulators/);
-  assert.match(page, /runJavascriptLab/);
+  assert.match(page, /compileAndRunC/);
+  assert.doesNotMatch(page, /runJavascriptLab|JavaScript simulation/);
   assert.match(page, /solutionSnapshot: answer/);
   assert.match(page, /Ready to move on/);
   assert.match(page, /<Markdown className="grade-summary">\{grade\.summary\}<\/Markdown>/);
@@ -103,6 +110,12 @@ test("uses the finished Study Lab interface", async () => {
   assert.match(grader, /solutionSnapshot/);
   assert.match(viteConfig, /command === "serve"/);
   assert.match(proxy, /Study Lab authentication required/);
+  assert.match(proxy, /Cross-Origin-Opener-Policy/);
+  assert.match(proxy, /Cross-Origin-Embedder-Policy/);
+  assert.match(worker, /Wasmer\.fromRegistry\("clang\/clang"\)/);
+  assert.match(worker, /"-std=c17"/);
+  assert.match(worker, /__STUDYLAB_RESULT__/);
+  assert.equal(packageJson.dependencies["@wasmer/sdk"], "^0.10.0");
   assert.equal(JSON.parse(railwayConfig).deploy.healthcheckPath, "/api/health");
   assert.doesNotMatch(page, /SkeletonPreview|codex-preview/);
 });
