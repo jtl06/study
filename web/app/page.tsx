@@ -6,7 +6,11 @@ import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import "katex/dist/katex.min.css";
-import { compileAndRunC } from "./c-runner";
+import {
+  compileAndRunC,
+  compileAndRunCOnRailway,
+  type CRunResult,
+} from "./c-runner";
 
 type Problem = {
   key: string;
@@ -47,7 +51,7 @@ type LabSubmission = {
   ranAt: string | null;
 };
 
-type LabRunState = "idle" | "loading" | "compiling" | "running";
+type LabRunState = "idle" | "loading" | "compiling" | "running" | "server";
 
 type StudyStatus = "not-started" | "working" | "review" | "done";
 type GradingModel = "gpt-5.6-luna" | "gpt-5.6-sol";
@@ -579,14 +583,60 @@ export default function Home() {
     changeContent(serializeLabSubmission({ ...labSubmission, ...patch }));
   }
 
-  async function runCurrentLab() {
-    if (!currentLab || !labSubmission || labRunState !== "idle") return;
-    setLabRunState("loading");
-    const result = await compileAndRunC(
-      labSubmission.code,
-      currentLab.testCode,
-      setLabRunState,
-    );
+  async function runCurrentLab(forceRailway = false) {
+    if (!currentProblem || !currentLab || !labSubmission || labRunState !== "idle") return;
+    let result: CRunResult;
+
+    if (forceRailway) {
+      setLabRunState("server");
+      try {
+        result = await compileAndRunCOnRailway(
+          currentProblem.key,
+          labSubmission.code,
+        );
+      } catch (error) {
+        result = {
+          output: [
+            "Railway runner unavailable",
+            error instanceof Error ? error.message : String(error),
+          ].join("\n\n"),
+          passed: 0,
+          total: currentLab.checkCount,
+          succeeded: false,
+          infrastructureFailure: true,
+          runner: "railway",
+        };
+      }
+    } else {
+      setLabRunState("loading");
+      result = await compileAndRunC(
+        labSubmission.code,
+        currentLab.testCode,
+        setLabRunState,
+      );
+      if (result.infrastructureFailure) {
+        setLabRunState("server");
+        try {
+          result = await compileAndRunCOnRailway(
+            currentProblem.key,
+            labSubmission.code,
+          );
+        } catch (error) {
+          result = {
+            output: [
+              result.output,
+              "Railway fallback unavailable",
+              error instanceof Error ? error.message : String(error),
+            ].join("\n\n"),
+            passed: 0,
+            total: currentLab.checkCount,
+            succeeded: false,
+            infrastructureFailure: true,
+            runner: "railway",
+          };
+        }
+      }
+    }
     updateLabSubmission({
       output: result.output,
       passed: result.passed,
@@ -1182,7 +1232,7 @@ export default function Home() {
                       <span className="runtime-dot" aria-hidden="true" />
                       <div>
                         <strong>Compile & run online</strong>
-                        <small>C17 · Clang/WASI · compiled entirely in your browser</small>
+                        <small>C17 · Clang/WASI · browser first, Railway fallback</small>
                       </div>
                     </div>
                     <div className="lab-actions">
@@ -1212,7 +1262,7 @@ export default function Home() {
                       </button>
                       <button
                         className="lab-run-button"
-                        onClick={runCurrentLab}
+                        onClick={() => runCurrentLab(false)}
                         disabled={labRunState !== "idle"}
                       >
                         {labRunState === "loading"
@@ -1221,7 +1271,17 @@ export default function Home() {
                             ? "Compiling…"
                             : labRunState === "running"
                               ? "Running…"
+                              : labRunState === "server"
+                                ? "Running on Railway…"
                               : "▶ Compile & run"}
+                      </button>
+                      <button
+                        className="lab-reset-button"
+                        onClick={() => runCurrentLab(true)}
+                        disabled={labRunState !== "idle"}
+                        title="Skip the browser compiler and run in Railway's WebAssembly sandbox"
+                      >
+                        Run on Railway
                       </button>
                     </div>
                   </header>
@@ -1283,9 +1343,11 @@ export default function Home() {
                             ? "Loading the browser Clang toolchain…\nThe first download may take a minute."
                             : labRunState === "compiling"
                               ? "Compiling main.c with Clang…"
-                              : "Running the compiled WebAssembly program…"
+                              : labRunState === "running"
+                                ? "Running the compiled WebAssembly program…"
+                                : "Browser compiler unavailable.\nCompiling in the Railway WebAssembly sandbox…"
                           : labSubmission.output ||
-                            "Compile the C program and run the checks. The first run downloads the browser toolchain and may take a minute."}
+                            "Compile the C program and run the checks. The browser runs it locally when possible; Railway takes over automatically if the browser toolchain is unavailable."}
                       </pre>
                     </div>
                   </div>

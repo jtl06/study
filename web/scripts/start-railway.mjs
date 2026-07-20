@@ -1,8 +1,12 @@
 import { spawn } from "node:child_process";
+import { randomBytes } from "node:crypto";
 import { createServer } from "node:http";
+import { startCRunnerService } from "./c-runner-service.mjs";
 
 const proxyPort = 8790;
+const cRunnerPort = 8791;
 const openAIKey = process.env.OPENAI_API_KEY ?? "";
+const cRunnerToken = randomBytes(32).toString("hex");
 const allowedPaths = new Set([
   "/v1/responses",
   "/v1/responses/input_tokens",
@@ -47,6 +51,11 @@ const proxy = createServer(async (request, response) => {
   }
 });
 
+const cRunner = await startCRunnerService({
+  port: cRunnerPort,
+  token: cRunnerToken,
+});
+
 proxy.listen(proxyPort, "127.0.0.1", () => {
   const args = [
     "node_modules/wrangler/bin/wrangler.js",
@@ -64,6 +73,10 @@ proxy.listen(proxyPort, "127.0.0.1", () => {
     "--var",
     `OPENAI_API_BASE_URL:http://127.0.0.1:${proxyPort}/v1`,
     "--var",
+    `C_RUNNER_URL:http://127.0.0.1:${cRunnerPort}`,
+    "--var",
+    `C_RUNNER_TOKEN:${cRunnerToken}`,
+    "--var",
     `SITE_USERNAME:${process.env.SITE_USERNAME ?? ""}`,
     "--var",
     `SITE_PASSWORD:${process.env.SITE_PASSWORD ?? ""}`,
@@ -77,6 +90,8 @@ proxy.listen(proxyPort, "127.0.0.1", () => {
   process.on("SIGINT", () => stop("SIGINT"));
   process.on("SIGTERM", () => stop("SIGTERM"));
   worker.on("exit", (code, signal) => {
-    proxy.close(() => process.exit(code ?? (signal ? 1 : 0)));
+    cRunner.close(() => {
+      proxy.close(() => process.exit(code ?? (signal ? 1 : 0)));
+    });
   });
 });

@@ -7,6 +7,8 @@ export type CRunResult = {
   passed: number;
   total: number;
   succeeded: boolean;
+  infrastructureFailure: boolean;
+  runner: "browser" | "railway";
 };
 
 const testHarness = `
@@ -92,6 +94,8 @@ export async function compileAndRunC(
         passed: 0,
         total: 0,
         succeeded: false,
+        infrastructureFailure: false,
+        runner: "browser",
       };
     }
 
@@ -131,6 +135,8 @@ export async function compileAndRunC(
       passed,
       total,
       succeeded: runOutput.ok && total > 0 && passed === total,
+      infrastructureFailure: false,
+      runner: "browser",
     };
   } catch (error) {
     compilerPromise = null;
@@ -141,8 +147,38 @@ export async function compileAndRunC(
       passed: 0,
       total: 0,
       succeeded: false,
+      infrastructureFailure: true,
+      runner: "browser",
     };
   } finally {
     project?.free();
   }
+}
+
+export async function compileAndRunCOnRailway(
+  problemKey: string,
+  code: string,
+): Promise<CRunResult> {
+  const response = await fetch("/api/labs/run", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ problemKey, code }),
+  });
+  let data: Partial<CRunResult> & { error?: string };
+  try {
+    data = (await response.json()) as typeof data;
+  } catch {
+    throw new Error(`Railway returned an invalid response (HTTP ${response.status}).`);
+  }
+  if (!response.ok) {
+    throw new Error(data.error || `Railway compilation failed (HTTP ${response.status}).`);
+  }
+  return {
+    output: data.output ?? "Railway returned no output.",
+    passed: data.passed ?? 0,
+    total: data.total ?? 0,
+    succeeded: data.succeeded ?? false,
+    infrastructureFailure: data.infrastructureFailure ?? false,
+    runner: "railway",
+  };
 }

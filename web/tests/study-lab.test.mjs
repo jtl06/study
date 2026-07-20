@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { compileLabOnRailway } from "../scripts/c-runner-service.mjs";
 
 const root = new URL("../", import.meta.url);
 
@@ -60,10 +61,14 @@ test("syncs the repository problem inventories", async () => {
 });
 
 test("uses the finished Study Lab interface", async () => {
-  const [page, worker, layout, grader, viteConfig, proxy, railwayConfig, packageJson] =
+  const [page, worker, serverRunner, labRoute, startRailway, dockerfile, layout, grader, viteConfig, proxy, railwayConfig, packageJson] =
     await Promise.all([
     readFile(new URL("app/page.tsx", root), "utf8"),
     readFile(new URL("app/c-runner.ts", root), "utf8"),
+    readFile(new URL("scripts/c-runner-service.mjs", root), "utf8"),
+    readFile(new URL("app/api/labs/run/route.ts", root), "utf8"),
+    readFile(new URL("scripts/start-railway.mjs", root), "utf8"),
+    readFile(new URL("Dockerfile", root), "utf8"),
     readFile(new URL("app/layout.tsx", root), "utf8"),
     readFile(new URL("app/api/grade/route.ts", root), "utf8"),
     readFile(new URL("vite.config.ts", root), "utf8"),
@@ -90,6 +95,10 @@ test("uses the finished Study Lab interface", async () => {
   assert.match(page, /main\.c/);
   assert.match(page, /Official simulators/);
   assert.match(page, /compileAndRunC/);
+  assert.match(page, /compileAndRunCOnRailway/);
+  assert.match(page, /browser first, Railway fallback/);
+  assert.match(page, /Running on Railway/);
+  assert.match(page, /Run on Railway/);
   assert.doesNotMatch(page, /runJavascriptLab|JavaScript simulation/);
   assert.match(page, /solutionSnapshot: answer/);
   assert.match(page, /Ready to move on/);
@@ -115,7 +124,32 @@ test("uses the finished Study Lab interface", async () => {
   assert.match(worker, /Wasmer\.fromRegistry\("clang\/clang"\)/);
   assert.match(worker, /"-std=c17"/);
   assert.match(worker, /__STUDYLAB_RESULT__/);
+  assert.match(worker, /infrastructureFailure/);
+  assert.match(serverRunner, /clang\/clang/);
+  assert.match(serverRunner, /RUN_TIMEOUT_MS = 5_000/);
+  assert.match(serverRunner, /MAX_CODE_BYTES = 64 \* 1024/);
+  assert.match(serverRunner, /activeCompiles >= 1/);
+  assert.match(serverRunner, /Runner: Railway sandbox/);
+  assert.match(labRoute, /C_RUNNER_TOKEN/);
+  assert.match(labRoute, /AbortSignal\.timeout\(125_000\)/);
+  assert.match(startRailway, /startCRunnerService/);
+  assert.match(startRailway, /randomBytes\(32\)/);
+  assert.match(dockerfile, /WASMER_VERSION=7\.1\.0/);
+  assert.match(dockerfile, /sha256sum -c/);
   assert.equal(packageJson.dependencies["@wasmer/sdk"], "^0.10.0");
   assert.equal(JSON.parse(railwayConfig).deploy.healthcheckPath, "/api/health");
   assert.doesNotMatch(page, /SkeletonPreview|codex-preview/);
+});
+
+test("validates Railway C runner requests before invoking Wasmer", async () => {
+  const unknown = await compileLabOnRailway("not-a-real-lab", "int main(void) {}");
+  assert.equal(unknown.status, 404);
+  assert.equal(unknown.body.error, "Unknown C lab.");
+
+  const tooLarge = await compileLabOnRailway(
+    "operating-systems-three-easy-pieces:V1",
+    "x".repeat(64 * 1024 + 1),
+  );
+  assert.equal(tooLarge.status, 413);
+  assert.match(tooLarge.body.error, /64 KB/);
 });
