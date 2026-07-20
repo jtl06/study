@@ -61,7 +61,7 @@ test("syncs the repository problem inventories", async () => {
 });
 
 test("uses the finished Study Lab interface", async () => {
-  const [page, worker, serverRunner, labRoute, startRailway, dockerfile, layout, grader, viteConfig, proxy, railwayConfig, packageJson] =
+  const [page, worker, serverRunner, labRoute, startRailway, dockerfile, rootDockerfile, layout, grader, viteConfig, proxy, railwayConfig, packageJson] =
     await Promise.all([
     readFile(new URL("app/page.tsx", root), "utf8"),
     readFile(new URL("app/c-runner.ts", root), "utf8"),
@@ -69,6 +69,7 @@ test("uses the finished Study Lab interface", async () => {
     readFile(new URL("app/api/labs/run/route.ts", root), "utf8"),
     readFile(new URL("scripts/start-railway.mjs", root), "utf8"),
     readFile(new URL("Dockerfile", root), "utf8"),
+    readFile(new URL("../Dockerfile", root), "utf8"),
     readFile(new URL("app/layout.tsx", root), "utf8"),
     readFile(new URL("app/api/grade/route.ts", root), "utf8"),
     readFile(new URL("vite.config.ts", root), "utf8"),
@@ -136,6 +137,8 @@ test("uses the finished Study Lab interface", async () => {
   assert.match(startRailway, /randomBytes\(32\)/);
   assert.match(dockerfile, /WASMER_VERSION=7\.1\.0/);
   assert.match(dockerfile, /sha256sum -c/);
+  assert.match(rootDockerfile, /WASMER_VERSION=7\.1\.0/);
+  assert.match(rootDockerfile, /sha256sum -c/);
   assert.equal(packageJson.dependencies["@wasmer/sdk"], "^0.10.0");
   assert.equal(JSON.parse(railwayConfig).deploy.healthcheckPath, "/api/health");
   assert.doesNotMatch(page, /SkeletonPreview|codex-preview/);
