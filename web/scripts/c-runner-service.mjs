@@ -123,6 +123,19 @@ function runCommand(command, args, { cwd, timeoutMs }) {
   });
 }
 
+function cleanCompilerOutput(output) {
+  return output
+    .split("\n")
+    .filter(
+      (line) =>
+        !line.includes(
+          "warning: The `--dir` option is deprecated and will be removed in the next major release.",
+        ),
+    )
+    .join("\n")
+    .trim();
+}
+
 function presentRun(compileResult, runResult) {
   const combinedOutput = [runResult.stdout.trim(), runResult.stderr.trim()]
     .filter(Boolean)
@@ -139,7 +152,7 @@ function presentRun(compileResult, runResult) {
         ? `✓ ${passed}/${total} checks passed`
         : `✗ ${passed}/${total} checks passed`
       : `Program exited with code ${runResult.code ?? "unknown"}.`;
-  const compilerWarnings = compileResult.stderr.trim();
+  const compilerWarnings = cleanCompilerOutput(compileResult.stderr);
 
   return {
     output: [
@@ -223,7 +236,7 @@ export async function compileLabOnRailway(problemKey, code, wasmerPath = "wasmer
         body: {
           output: [
             "Compilation failed",
-            compileResult.stderr.trim(),
+            cleanCompilerOutput(compileResult.stderr),
             compileResult.stdout.trim(),
             "Runner: Railway sandbox",
           ]
