@@ -799,6 +799,23 @@ select {
   font-size: 9px;
 }
 
+.card-source-meta {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.card-source-meta a {
+  color: var(--green);
+  font-size: 9px;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.card-source-meta a:hover {
+  text-decoration: underline;
+}
+
 .editor-tools {
   display: flex;
   align-items: center;

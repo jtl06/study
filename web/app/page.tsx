@@ -17,6 +17,7 @@ type Problem = {
   subjectSlug: string;
   subjectTitle: string;
   source: string;
+  sourceUrl?: string;
   chapter: string;
   chapterTitle: string;
   problemId: string;
@@ -121,6 +122,8 @@ const subjectCovers: Record<string, string> = {
   "operating-systems-principles-practice":
     "/covers/operating-systems-principles-practice.png",
   "program-proofs": "/covers/program-proofs.jpg",
+  "cpp-concurrency-in-action": "/covers/cpp-concurrency-in-action.jpg",
+  perfbook: "/covers/perfbook.jpg",
 };
 
 function emptyLabSubmission(lab: LabConfig): LabSubmission {
@@ -270,6 +273,7 @@ export default function Home() {
     Promise.all([
       fetch("/problems.json").then((response) => response.json()),
       fetch("/ostep-labs.json").then((response) => response.json()),
+      fetch("/advanced-concurrency.json").then((response) => response.json()),
       fetch("/chapter-practice.json").then((response) => response.json()),
       fetch("/problem-guides.json").then((response) => response.json()),
       fetch("/api/solutions").then((response) => {
@@ -277,11 +281,12 @@ export default function Home() {
         return response.json();
       }),
     ])
-      .then(([problemData, ostepData, practiceData, guideData, solutionData]) => {
+      .then(([problemData, ostepData, concurrencyData, practiceData, guideData, solutionData]) => {
         if (cancelled) return;
         const nextProblems = [
           ...(problemData.problems as Problem[]),
           ...(ostepData.problems as Problem[]),
+          ...(concurrencyData.problems as Problem[]),
         ];
         const problemKeys = new Set(nextProblems.map((problem) => problem.key));
         const nextSolutions = Object.fromEntries(
@@ -1174,7 +1179,18 @@ export default function Home() {
                       </button>
                     )}
                   </div>
-                  <small>{currentProblem.pageRef}</small>
+                  <div className="card-source-meta">
+                    <small>{currentProblem.pageRef}</small>
+                    {currentProblem.sourceUrl && (
+                      <a
+                        href={currentProblem.sourceUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Book site ↗
+                      </a>
+                    )}
+                  </div>
                 </div>
                 {statementView === "reference" && currentGuide ? (
                   <div className="reference-panel">

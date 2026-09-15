@@ -6,9 +6,10 @@ import { compileLabOnRailway } from "../scripts/c-runner-service.mjs";
 const root = new URL("../", import.meta.url);
 
 test("syncs the repository problem inventories", async () => {
-  const [data, ostep, practice] = await Promise.all([
+  const [data, ostep, concurrency, practice] = await Promise.all([
     readFile(new URL("public/problems.json", root), "utf8").then(JSON.parse),
     readFile(new URL("public/ostep-labs.json", root), "utf8").then(JSON.parse),
+    readFile(new URL("public/advanced-concurrency.json", root), "utf8").then(JSON.parse),
     readFile(new URL("public/chapter-practice.json", root), "utf8").then(JSON.parse),
   ]);
 
@@ -58,6 +59,20 @@ test("syncs the repository problem inventories", async () => {
         problem.lab.checkCount > 0,
     ),
   );
+  assert.equal(concurrency.problems.length, 50);
+  assert.equal(
+    concurrency.problems.filter(
+      (problem) => problem.subjectSlug === "cpp-concurrency-in-action",
+    ).length,
+    25,
+  );
+  assert.equal(
+    concurrency.problems.filter((problem) => problem.subjectSlug === "perfbook").length,
+    25,
+  );
+  assert.equal(new Set(concurrency.problems.map((problem) => problem.key)).size, 50);
+  assert.ok(concurrency.problems.every((problem) => problem.sourceUrl));
+  assert.ok(concurrency.problems.every((problem) => problem.statement.length > 100));
 });
 
 test("uses the finished Study Lab interface", async () => {
@@ -90,6 +105,10 @@ test("uses the finished Study Lab interface", async () => {
   assert.match(page, /covers\/algorithm-design-manual\.jpg/);
   assert.match(page, /covers\/operating-systems-principles-practice\.png/);
   assert.match(page, /covers\/program-proofs\.jpg/);
+  assert.match(page, /covers\/cpp-concurrency-in-action\.jpg/);
+  assert.match(page, /covers\/perfbook\.jpg/);
+  assert.match(page, /advanced-concurrency\.json/);
+  assert.match(page, /Book site/);
   assert.match(page, /Sol daily cap/);
   assert.match(page, /Compile & run online/);
   assert.match(page, /C17 · Clang\/WASI/);
@@ -137,8 +156,11 @@ test("uses the finished Study Lab interface", async () => {
   assert.match(startRailway, /randomBytes\(32\)/);
   assert.match(dockerfile, /WASMER_VERSION=7\.1\.0/);
   assert.match(dockerfile, /sha256sum -c/);
+  assert.match(dockerfile, /NEXT_TELEMETRY_DISABLED=1/);
+  assert.match(dockerfile, /WRANGLER_SEND_METRICS=false/);
   assert.match(rootDockerfile, /WASMER_VERSION=7\.1\.0/);
   assert.match(rootDockerfile, /sha256sum -c/);
+  assert.match(rootDockerfile, /NEXT_TELEMETRY_DISABLED=1/);
   assert.equal(packageJson.dependencies["@wasmer/sdk"], "^0.10.0");
   assert.equal(JSON.parse(railwayConfig).deploy.healthcheckPath, "/api/health");
   assert.doesNotMatch(page, /SkeletonPreview|codex-preview/);
