@@ -4,6 +4,7 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { timingSafeEqual } from "node:crypto";
+import { measureMemory } from "./memory-monitor.mjs";
 
 const MAX_CODE_BYTES = 64 * 1024;
 const MAX_BODY_BYTES = 72 * 1024;
@@ -307,7 +308,8 @@ export async function startCRunnerService({ port, token, wasmerPath = "wasmer" }
     activeCompiles += 1;
     try {
       const body = await readJsonBody(request);
-      const result = await compileLabOnRailway(body.problemKey, body.code, wasmerPath);
+      const result = await measureMemory("compilation", () =>
+        compileLabOnRailway(body.problemKey, body.code, wasmerPath));
       json(response, result.status, result.body);
     } catch (error) {
       if (error instanceof Error && error.message === "REQUEST_TOO_LARGE") {

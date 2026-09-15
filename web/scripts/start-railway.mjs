@@ -2,6 +2,7 @@ import { spawn } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { createServer } from "node:http";
 import { startCRunnerService } from "./c-runner-service.mjs";
+import { measureMemory } from "./memory-monitor.mjs";
 
 const proxyPort = 8790;
 const cRunnerPort = 8791;
@@ -32,6 +33,7 @@ const proxy = createServer(async (request, response) => {
   try {
     const chunks = [];
     for await (const chunk of request) chunks.push(chunk);
+    const { upstream, body } = await measureMemory(path === "/v1/responses" ? "grading" : "token_count", async () => {
     const upstream = await fetch(`https://api.openai.com${path}`, {
       method: "POST",
       headers: {
@@ -41,6 +43,8 @@ const proxy = createServer(async (request, response) => {
       body: Buffer.concat(chunks),
     });
     const body = Buffer.from(await upstream.arrayBuffer());
+    return { upstream, body };
+    });
     response.writeHead(upstream.status, {
       "content-type": upstream.headers.get("content-type") ?? "application/json",
     });

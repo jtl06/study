@@ -6,6 +6,7 @@
     "node": ">=22.13.0"
   },
   "scripts": {
+    "memory:harness": "node scripts/memory-harness.mjs",
     "sync:data": "node scripts/sync-problems.mjs",
     "import:notebooks": "node scripts/import-notebook-progress.mjs",
     "dev": "npm run sync:data && WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext dev",
